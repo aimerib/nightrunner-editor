@@ -15,8 +15,8 @@ export default function TabGroup({
   const num_of_tabs = children.length;
   return (
     <div
-      className={`grid grid-cols-nr${num_of_tabs} p-5 -ml-px ${
-        className && className
+      className={`grid grid-cols-nr${num_of_tabs} p-5 -ml-px${
+        className ? ` ${className}` : ''
       }`}
     >
       {children.map((child) => {

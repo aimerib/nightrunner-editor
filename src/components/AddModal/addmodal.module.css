@@ -1,0 +1,30 @@
+.title_bar {
+  display: grid;
+  justify-content: end;
+  padding: 0.5rem;
+  font-weight: 800;
+  @apply bg-nr-800 text-green-nr font-logo;
+}
+.wrapper {
+  @apply fixed grid w-3/5 grid-rows-4 transform -translate-x-1/2 -translate-y-1/2 shadow-modal bg-nr-600 top-1/2 left-1/2 text-green-nr h-2/5;
+  grid-template-rows: 3rem 2fr 1fr;
+}
+
+.close_button {
+  @apply bg-nr-800;
+  align-self: end;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+}
+.close_button > svg {
+  fill: #39ff14;
+}
+.close_button:hover > svg {
+  fill: black;
+}
+.close_button:hover {
+  background: #39ff14;
+}

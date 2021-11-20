@@ -1,0 +1,30 @@
+{
+  "extends": ["sanity/react", "plugin:@typescript-eslint/recommended"],
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 12
+  },
+  "rules": {
+    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+    "semi": 0,
+    "object-curly-spacing": 0,
+    "react/jsx-filename-extension": 0,
+    "react/jsx-no-bind": 0,
+    "camelcase": "off",
+    "no-use-before-define": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/require-default-props": "off"
+  },
+  "plugins": ["react-hooks", "@typescript-eslint"],
+  "overrides": [
+    {
+      "files": ["**/*.tsx"],
+      "rules": {
+        "react/prop-types": "off"
+      }
+    }
+  ]
+}

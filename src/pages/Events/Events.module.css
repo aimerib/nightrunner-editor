@@ -1,0 +1,26 @@
+.filter__menu {
+  margin: 0.125rem auto;
+}
+
+.filter__option {
+  background-color: blueviolet;
+}
+.filter__option--is-focused {
+  background-color: blueviolet;
+}
+
+.filter__group {
+  padding: 0;
+}
+
+.filter__menu-portal {
+  border: 1px solid darkblue;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+.col {
+  flex: 50%;
+}

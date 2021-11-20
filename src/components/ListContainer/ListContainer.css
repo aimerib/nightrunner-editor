@@ -1,0 +1,19 @@
+.scrollable::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  border-radius: 1px;
+  background-color: #39ff14;
+}
+.scrollable {
+  overflow-y: scroll;
+}
+
+.container {
+  height: 5rem;
+}
+
+.small {
+  height: 8rem;
+}

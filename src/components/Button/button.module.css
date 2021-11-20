@@ -1,0 +1,11 @@
+.button {
+  @apply px-8 py-2 transition duration-150 ease-in-out transform rounded-md shadow-lg bg-nr-900 font-logo active:shadow-none active:scale-95;
+  width: max-content;
+  height: max-content;
+}
+
+.disabled_button {
+  @apply px-8 py-2 rounded-md shadow-lg cursor-not-allowed bg-nr-700 font-logo;
+  width: max-content;
+  height: max-content;
+}

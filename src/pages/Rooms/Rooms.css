@@ -1,0 +1,17 @@
+.exit_container {
+  height: 18rem;
+  min-height: 18rem;
+  max-height: 18rem;
+}
+
+.full_container_scroll {
+  height: 15rem;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+.col {
+  flex: 50%;
+}

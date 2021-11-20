@@ -1,0 +1,21 @@
+.hide_checkbox {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+.checkbox_icon {
+  stroke:none;
+  fill-rule:nonzero;
+  fill:#39ff14;
+  fill-opacity:1;
+}
+.checkbox_container {
+  @apply self-center inline-block justify-self-center bg-nr-900; 
+  @apply focus:bg-nr-active focus:outline-none focus:ring-green-nr focus:ring-2;
+}

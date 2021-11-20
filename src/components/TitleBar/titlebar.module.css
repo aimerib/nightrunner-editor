@@ -1,0 +1,37 @@
+.titlebar {
+  height: 41px;
+  background: black;
+  border-right: 1px rgba(55, 55, 55, 0.6) solid;
+  border-left: 1px rgba(55, 55, 55, 0.6) solid;
+  border-top: 1px rgba(55, 55, 55, 0.6) solid;
+  user-select: none;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: end;
+  gap: 10px;
+}
+.titlebar_button {
+  background: black;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 39px;
+  height: 39px;
+}
+.titlebar_button > svg {
+  fill: #39ff14;
+}
+.titlebar_button:hover > svg {
+  fill: black;
+}
+.titlebar_button:hover {
+  border-top: 1px rgba(55, 55, 55, 0.6) solid;
+  background: #39ff14;
+}
+.titlebar_button_close:hover {
+  border-right: 1px rgba(55, 55, 55, 0.6) solid;
+}
+.title {
+  @apply absolute transform -translate-x-1/2 top-2 justify-self-center font-logo left-1/2;
+  color: #39ff14;
+}

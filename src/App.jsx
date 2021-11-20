@@ -11,9 +11,9 @@ import {
 
 function App() {
   return (
-    <div className="App">
+    <>
       <TitleBar title="Nightrunner Editor" />
-      <TabGroup className="">
+      <TabGroup>
         <Tab name="Items">
           <Items />
         </Tab>
@@ -33,7 +33,7 @@ function App() {
           <GameSettings />
         </Tab>
       </TabGroup>
-    </div>
+    </>
   );
 }
 

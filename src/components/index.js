@@ -8,6 +8,7 @@ import Input from './Input';
 import SelectList from './SelectList';
 import Checkbox from './Checkbox';
 import TitleBar from './TitleBar';
+import SideNav from './SideNav';
 export {
   Button,
   TabGroup,
@@ -18,5 +19,6 @@ export {
   Input,
   SelectList,
   Checkbox,
-  TitleBar
+  TitleBar,
+  SideNav,
 };

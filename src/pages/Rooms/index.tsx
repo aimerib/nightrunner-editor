@@ -310,7 +310,7 @@ export default function Rooms() {
   }
 
   return (
-    <div className="h-full bg-nr-main text-green-nr">
+    <div className="w-full h-full bg-nr-main text-green-nr">
       <div className="grid h-full grid-cols-2">
         {/* left side - content*/}
         <ListContainer label="Existing rooms:">{renderRooms()}</ListContainer>

@@ -78,6 +78,7 @@ module.exports = {
         'nr-600': '#525252',
         'nr-500': '#656565',
         'nr-active': '#39ff14',
+        'nr-green': '#39ff14',
       },
       borderColor: {
         'green-nr': '#39ff14',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TabGroup, Tab, TitleBar } from './components';
+import { TitleBar, SideNav } from './components';
 import {
   Rooms,
   Items,
@@ -9,30 +9,20 @@ import {
   GameSettings,
 } from './pages';
 
+const data = [
+  { name: 'Items', component: <Items /> },
+  { name: 'Subjects', component: <Subjects /> },
+  { name: 'Narratives', component: <Narratives /> },
+  { name: 'Rooms', component: <Rooms /> },
+  { name: 'Events', component: <Events /> },
+  { name: 'Settings', component: <GameSettings /> },
+];
+
 function App() {
   return (
     <>
       <TitleBar title="Nightrunner Editor" />
-      <TabGroup>
-        <Tab name="Items">
-          <Items />
-        </Tab>
-        <Tab name="Subjects">
-          <Subjects />
-        </Tab>
-        <Tab name="Narratives">
-          <Narratives />
-        </Tab>
-        <Tab name="Rooms">
-          <Rooms />
-        </Tab>
-        <Tab name="Events">
-          <Events />
-        </Tab>
-        <Tab name="Game Settings">
-          <GameSettings />
-        </Tab>
-      </TabGroup>
+      <SideNav data={data} />
     </>
   );
 }

@@ -56,3 +56,12 @@ code {
 button {
   font-size: calc(10px + 2vmin);
 }
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.full-height {
+  height: calc(100vh - 41px);
+}

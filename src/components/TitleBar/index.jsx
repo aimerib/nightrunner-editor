@@ -12,7 +12,9 @@ export default function TitleBar({ title }) {
     <div>
       <div data-tauri-drag-region className={style.titlebar}>
         <div data-tauri-drag-region className={style.title}>
-          <p>{title}</p>
+          <p data-tauri-drag-region className="cursor-default">
+            {title}
+          </p>
         </div>
         <MinimizeButton />
         {isMaximized ? (

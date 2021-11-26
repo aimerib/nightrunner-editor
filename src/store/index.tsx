@@ -1,11 +1,16 @@
 import React, { createContext, Dispatch, useReducer } from 'react';
-import { room_reducer, item_reducer, narrative_reducer } from './reducers';
+import {
+  room_reducer,
+  item_reducer,
+  narrative_reducer,
+  subject_reducer,
+} from './reducers';
 import {
   initial_items_state,
   initial_rooms_state,
   initial_events_state,
   initial_narratives_state,
-  initial_subject_state,
+  initial_subjects_state,
 } from '././initialStates';
 import {
   ITEMS_STATE_TYPE,
@@ -14,6 +19,8 @@ import {
   ROOM_ACTION_TYPE,
   NARRATIVES_STATE_TYPE,
   NARRATIVE_ACTION_TYPE,
+  SUBJECTS_STATE_TYPE,
+  SUBJECT_ACTION_TYPE,
 } from '../types';
 
 interface NRContext {
@@ -24,7 +31,7 @@ interface NRContext {
   rooms: [ROOMS_STATE_TYPE, Dispatch<ROOM_ACTION_TYPE>];
   events: [Record<string, unknown>, Dispatch<Record<string, unknown>>];
   narratives: [NARRATIVES_STATE_TYPE, Dispatch<NARRATIVE_ACTION_TYPE>];
-  subjects: [Record<string, unknown>, Dispatch<Record<string, unknown>>];
+  subjects: [SUBJECTS_STATE_TYPE, Dispatch<SUBJECT_ACTION_TYPE>];
 }
 
 const store = createContext({} as NRContext);
@@ -81,31 +88,10 @@ const StateProvider = ({ children }) => {
   //#endregion
 
   //#region Subjects reducer
-  const [subjects_state, dispatch_subject] = useReducer((old_state, action) => {
-    switch (action.type) {
-      case 'ADD_SUBJECT': {
-        const new_subject = {};
-        new_subject[action.payload.id] = {
-          id: action.payload.id,
-          ...action.payload.new_subject,
-        };
-        return { ...old_state, ...new_subject };
-      }
-      case 'UPDATE_SUBJECT': {
-        const updated_subject = action.payload;
-        const subjects = { ...old_state };
-        subjects[updated_subject.id] = { ...updated_subject };
-        return { ...old_state, ...subjects };
-      }
-      case 'REMOVE_SUBJECT': {
-        const subjects = { ...old_state };
-        delete subjects[action.payload];
-        return { ...subjects };
-      }
-      default:
-        return old_state;
-    }
-  }, initial_subject_state);
+  const [subjects_state, dispatch_subject] = useReducer(
+    subject_reducer,
+    initial_subjects_state
+  );
   //#endregion
 
   return (

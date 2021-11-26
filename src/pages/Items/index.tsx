@@ -11,11 +11,11 @@ import { ITEM_TYPE } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Items(): JSX.Element {
-  const empty_item: ITEM_TYPE = {
-    name: '',
-    description: '',
-    can_pick: false,
-  };
+  // const empty_item: ITEM_TYPE = {
+  //   name: '',
+  //   description: '',
+  //   can_pick: false,
+  // };
   // init states
   const [name, set_name] = useState<string>('');
   const [description, set_description] = useState<string>('');
@@ -23,7 +23,7 @@ export default function Items(): JSX.Element {
   const [id, set_id] = useState<number>(1);
   const [inputRef, setInputFocus] = useFocus();
   const [selectedRadio, set_selectedRadio] = useState<string>('');
-  const [item, set_item] = useState<ITEM_TYPE>(empty_item);
+  const [item, set_item] = useState({} as ITEM_TYPE);
 
   // init items state
   const [items_state, dispatch_item] = useContext(store).items;
@@ -53,7 +53,7 @@ export default function Items(): JSX.Element {
     } else if (new_item.name && new_item.description) {
       dispatch_item({ type: 'ADD_ITEM', payload: { new_item, id } });
     }
-    set_item(empty_item);
+    set_item(null);
     set_selectedRadio('');
     set_description('');
     set_name('');

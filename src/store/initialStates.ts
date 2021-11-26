@@ -1,4 +1,9 @@
-import { ROOMS_STATE_TYPE, ITEMS_STATE_TYPE } from '../types'
+import {
+  ROOMS_STATE_TYPE,
+  ITEMS_STATE_TYPE,
+  NARRATIVES_STATE_TYPE,
+  SUBJECTS_STATE_TYPE
+} from '../types'
 export const initial_items_state: ITEMS_STATE_TYPE = {};
 export const initial_rooms_state: ROOMS_STATE_TYPE = {};
 export const initial_events_state = {
@@ -13,5 +18,5 @@ export const initial_events_state = {
   // required_events: [],
   // remove_old_narratives: false,
 };
-export const initial_narratives_state = {};
-export const initial_subject_state = {};
+export const initial_narratives_state: NARRATIVES_STATE_TYPE = {};
+export const initial_subjects_state: SUBJECTS_STATE_TYPE = {};

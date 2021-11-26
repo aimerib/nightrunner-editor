@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Button, RadioButton, ListContainer, Input } from '../../components';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
+import { SUBJECT_TYPE } from '../../types';
 
 export default function Subjects() {
   // init states
@@ -10,13 +11,13 @@ export default function Subjects() {
   const [id, set_id] = useState(1);
   const [inputRef, setInputFocus] = useFocus();
   const [selectedRadio, set_selectedRadio] = useState('');
-  const [subject, set_subject] = useState({});
+  const [subject, set_subject] = useState({} as SUBJECT_TYPE);
 
   // init items state
   const [subjects_state, dispatch_subject] = useContext(store).subjects;
 
   // holds the new item object
-  const new_subject = { name, description };
+  const new_subject: SUBJECT_TYPE = { name, description };
 
   useEffect(() => {
     const subjects = Object.keys(subjects_state).map((key) => {
@@ -27,7 +28,7 @@ export default function Subjects() {
     }
   }, [subjects_state]);
 
-  const handleChange = () => {
+  const handleChange = (): void => {
     if (subject.id) {
       if (name && description) {
         dispatch_subject({
@@ -38,22 +39,22 @@ export default function Subjects() {
     } else if (new_subject.name && new_subject.description) {
       dispatch_subject({ type: 'ADD_SUBJECT', payload: { new_subject, id } });
     }
-    set_subject({});
+    set_subject(null);
     set_selectedRadio('');
     set_description('');
     set_name('');
     setInputFocus();
   };
 
-  const handleDelete = () => {
+  const handleDelete = (): void => {
     set_description('');
     set_name('');
     dispatch_subject({ type: 'REMOVE_SUBJECT', payload: subject.id });
     setInputFocus();
   };
 
-  const renderItems = () => {
-    return Object.keys(subjects_state).map((key) => {
+  const renderSubjects = (): JSX.Element[] => {
+    return Object.keys(subjects_state).map((key): JSX.Element => {
       return (
         <RadioButton
           key={subjects_state[key].id}
@@ -79,7 +80,7 @@ export default function Subjects() {
       <div className="grid w-full h-full grid-cols-2">
         {/* left side - content*/}
         <ListContainer label="Existing subjects:">
-          {renderItems()}
+          {renderSubjects()}
         </ListContainer>
         {/* right side - form for adding more items */}
         <form
@@ -93,7 +94,7 @@ export default function Subjects() {
             label="Subject name:"
             name="name"
             autoFocus
-            ref={inputRef}
+            innerRef={inputRef}
             value={name}
             onChange={(e) => {
               set_name(e.target.value);

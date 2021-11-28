@@ -1,5 +1,6 @@
 .button {
-  @apply px-8 py-2 transition duration-150 ease-in-out transform rounded-md shadow-lg bg-nr-900 font-logo active:shadow-none active:scale-95;
+  @apply px-8 py-2 transition duration-150 ease-in-out transform rounded-md shadow-lg bg-nr-900;
+  @apply font-logo active:shadow-none active:scale-95 focus:ring-2 focus:ring-green-nr;
   width: max-content;
   height: max-content;
 }

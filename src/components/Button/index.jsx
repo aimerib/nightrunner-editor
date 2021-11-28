@@ -18,7 +18,7 @@ export default function Button({
         disabled={disabled}
         className={`${
           disabled ? styles.disabled_button : styles.button
-        } ${className} ${disabled ? '' : 'hover:text-glow-sm'}`}
+        } ${className} ${disabled ? '' : 'hover:text-glow-sm'} text-2.5xl`}
         type={type === 'submit' ? 'submit' : 'button'}
         onClick={run_callback_with_delay}
       >
@@ -31,7 +31,7 @@ export default function Button({
       disabled={disabled}
       className={`${
         disabled ? styles.disabled_button : styles.button
-      } ${className} ${disabled ? '' : 'hover:text-glow-sm'}`}
+      } ${className} ${disabled ? '' : 'hover:text-glow-sm'} text-2.5xl`}
       type={type === 'submit' ? 'submit' : 'button'}
     >
       {children}

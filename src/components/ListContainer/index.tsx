@@ -1,8 +1,7 @@
-import React from 'react';
-import { Expand } from '../../utils/expandTypes';
+import React, { useRef, useState, useEffect } from 'react';
 import './ListContainer.css';
 
-type ListContainerProps = Expand<{
+type ListContainerProps = {
   /** @param {React.ReactNode} children - Elements to be rendered in the list */
   children: React.ReactNode;
   /** @param {string} label - The label for the list container */
@@ -13,7 +12,7 @@ type ListContainerProps = Expand<{
   scrollable?: boolean;
   /** @param {boolean} small - If the list container should be small */
   small?: boolean;
-}>;
+};
 
 const ListContainer = ({
   children,
@@ -22,6 +21,22 @@ const ListContainer = ({
   className,
   scrollable = false,
 }: ListContainerProps): JSX.Element => {
+  const listContainerRef = useRef<HTMLDivElement>(null);
+  const [height, set_height] = useState(null);
+
+  useEffect(() => {
+    if (listContainerRef.current) {
+      set_height(listContainerRef.current.clientHeight);
+    }
+  }, [listContainerRef]);
+  const decide_height = (): string => {
+    if (small) {
+      return `${height}px`;
+    } else if (height) {
+      return `${height}px`;
+    }
+    return 'auto';
+  };
   return (
     <div
       style={{ gridTemplateRows: 'min-content' }}
@@ -29,9 +44,11 @@ const ListContainer = ({
     >
       <p className="h-auto pb-2 text-xl font-bold">{label}</p>
       <div
-        className={`h-full bg-nr-900 ring-inset ring-gray-900 ring-1 nr-input${
+        ref={listContainerRef}
+        style={{ height: decide_height() }}
+        className={`bg-nr-900 ring-inset ring-gray-900 ring-1 nr-input${
           scrollable ? ' scrollable' : ''
-        } ${small ? 'small' : ''} main_container`}
+        } ${small ? 'small' : ''}`}
       >
         {children ? children : <span>No exits yet</span>}
       </div>

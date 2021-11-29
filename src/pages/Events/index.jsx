@@ -356,7 +356,7 @@ export default function Events() {
                 />
               </div>
             </div>
-            <div className="flex self-end justify-between mt-5">
+            <div className="flex self-end justify-around mt-5">
               <Button type="submit" disabled={disabled_save()}>
                 Save event
               </Button>

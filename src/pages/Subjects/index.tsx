@@ -39,7 +39,7 @@ export default function Subjects() {
     } else if (new_subject.name && new_subject.description) {
       dispatch_subject({ type: 'ADD_SUBJECT', payload: { new_subject, id } });
     }
-    set_subject(null);
+    set_subject({} as SUBJECT_TYPE);
     set_selectedRadio('');
     set_description('');
     set_name('');
@@ -79,7 +79,7 @@ export default function Subjects() {
     <div className="w-full h-full bg-nr-main text-green-nr">
       <div className="grid w-full h-full grid-cols-2">
         {/* left side - content*/}
-        <ListContainer label="Existing subjects:">
+        <ListContainer scrollable label="Existing subjects:">
           {renderSubjects()}
         </ListContainer>
         {/* right side - form for adding more items */}
@@ -101,12 +101,13 @@ export default function Subjects() {
             }}
           />
           <Input
+            multiline
             label="Subject description:"
             name="description"
             value={description}
             onChange={(e) => set_description(e.target.value)}
           />
-          <div className="flex justify-between mt-5">
+          <div className="flex justify-around mt-5">
             <Button type="submit">Save subject</Button>
             <Button type="button" onClick={handleDelete}>
               Delete subject

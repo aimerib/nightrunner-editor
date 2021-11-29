@@ -4,18 +4,13 @@ import {
   RadioButton,
   ListContainer,
   Input,
-  Checkbox,
+  Checkbox
 } from '../../components';
 import { store } from '../../store';
 import { ITEM_TYPE } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Items(): JSX.Element {
-  // const empty_item: ITEM_TYPE = {
-  //   name: '',
-  //   description: '',
-  //   can_pick: false,
-  // };
   // init states
   const [name, set_name] = useState<string>('');
   const [description, set_description] = useState<string>('');
@@ -47,13 +42,13 @@ export default function Items(): JSX.Element {
       if (name && description) {
         dispatch_item({
           type: 'UPDATE_ITEM',
-          payload: { ...item, name, description, can_pick },
+          payload: { ...item, name, description, can_pick }
         });
       }
     } else if (new_item.name && new_item.description) {
       dispatch_item({ type: 'ADD_ITEM', payload: { new_item, id } });
     }
-    set_item(null);
+    set_item({} as ITEM_TYPE);
     set_selectedRadio('');
     set_description('');
     set_name('');
@@ -115,6 +110,7 @@ export default function Items(): JSX.Element {
             }}
           />
           <Input
+            multiline
             label="Item description:"
             name="description"
             value={description}
@@ -127,7 +123,7 @@ export default function Items(): JSX.Element {
             checked={can_pick}
             onClick={() => set_can_pick(!can_pick)}
           />
-          <div className="flex justify-between mt-5">
+          <div className="flex justify-around mt-5">
             <Button type="submit">Save item</Button>
             <Button type="button" onClick={handleDelete}>
               Delete item

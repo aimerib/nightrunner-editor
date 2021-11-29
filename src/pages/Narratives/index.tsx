@@ -109,6 +109,20 @@ export default function Narratives() {
     );
   };
 
+  const disabled_save = () => {
+    if (!text || !description) {
+      return true;
+    }
+    return false;
+  };
+
+  const disabled_delete = () => {
+    if (selectedRadio) {
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div className="w-full h-full bg-nr-main text-green-nr">
       <div className="grid w-full h-full grid-cols-2">
@@ -126,8 +140,14 @@ export default function Narratives() {
         >
           {renderInputs()}
           <div className="flex justify-around mt-5">
-            <Button type="submit">Save narrative</Button>
-            <Button type="button" onClick={handleDelete}>
+            <Button type="submit" disabled={disabled_save()}>
+              Save narrative
+            </Button>
+            <Button
+              type="button"
+              disabled={disabled_delete()}
+              onClick={handleDelete}
+            >
               Delete narrative
             </Button>
           </div>

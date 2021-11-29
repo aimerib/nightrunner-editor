@@ -33,7 +33,7 @@ export default function Subjects() {
       if (name && description) {
         dispatch_subject({
           type: 'UPDATE_SUBJECT',
-          payload: { ...subject, name, description },
+          payload: { ...subject, name, description }
         });
       }
     } else if (new_subject.name && new_subject.description) {
@@ -49,6 +49,7 @@ export default function Subjects() {
   const handleDelete = (): void => {
     set_description('');
     set_name('');
+    set_selectedRadio('');
     dispatch_subject({ type: 'REMOVE_SUBJECT', payload: subject.id });
     setInputFocus();
   };
@@ -73,6 +74,20 @@ export default function Subjects() {
         </RadioButton>
       );
     });
+  };
+
+  const disabled_save = () => {
+    if (!name || !description) {
+      return true;
+    }
+    return false;
+  };
+
+  const disabled_delete = () => {
+    if (selectedRadio) {
+      return false;
+    }
+    return true;
   };
 
   return (
@@ -108,8 +123,14 @@ export default function Subjects() {
             onChange={(e) => set_description(e.target.value)}
           />
           <div className="flex justify-around mt-5">
-            <Button type="submit">Save subject</Button>
-            <Button type="button" onClick={handleDelete}>
+            <Button type="submit" disabled={disabled_save()}>
+              Save subject
+            </Button>
+            <Button
+              type="button"
+              disabled={disabled_delete()}
+              onClick={handleDelete}
+            >
               Delete subject
             </Button>
           </div>

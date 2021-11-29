@@ -26,6 +26,8 @@ export default function Rooms() {
   const [direction, set_direction] = useState('');
   const [showModal, set_showModal] = useState(false);
   const [exit_id, set_exit_id] = useState(0);
+  const [exits_exist, set_exits_exist] = useState<boolean>(false);
+  const [is_first_room, set_is_first_room] = useState<boolean>(null);
   const [selected_exit, set_selected_exit] = useState<EXIT_TYPE>(null);
 
   const [id, set_id] = useState(0);
@@ -65,12 +67,8 @@ export default function Rooms() {
           return exits[key];
         })
       : [];
-  const narratives_array = available_narratives
-    ? Object.keys(available_narratives).map((key) => {
-        return available_narratives[key];
-      })
-    : [];
-  const rooms_array = rooms_state
+
+  const rooms_array: ROOM_TYPE[] = rooms_state
     ? Object.keys(rooms_state).map((key) => {
         return rooms_state[key];
       })
@@ -79,26 +77,22 @@ export default function Rooms() {
   useEffect(() => {
     if (exits_array.length > 0) {
       set_exit_id(exits_array[exits_array.length - 1].id + 1);
+      set_exits_exist(true);
     }
   }, [exits]);
 
-  const introExists =
-    Object.keys(rooms_state).filter((key) => {
-      return rooms_state[key].name === 'Intro';
-    }).length > 0;
-
-  const handleIntro = () => {
-    if (introExists) {
-      set_id(rooms_array[rooms_array.length - 1].id + 1);
+  useEffect(() => {
+    if (rooms_array.length < 1) {
+      set_is_first_room(true);
     } else {
-      set_name('Intro');
-      set_description('Intro of the game.');
-      set_narrative(1);
+      set_is_first_room(false);
     }
-  };
+  }, [id, room]);
 
   useEffect(() => {
-    handleIntro();
+    if (rooms_array.length > 0) {
+      set_id(rooms_array[rooms_array.length - 1].id + 1);
+    }
   }, []);
 
   const resetInputs = () => {
@@ -140,10 +134,8 @@ export default function Rooms() {
   };
 
   const handleDelete = () => {
-    if (can_delete()) {
-      dispatch_room({ type: 'REMOVE_ROOM', payload: room.id });
-      resetInputs();
-    }
+    dispatch_room({ type: 'REMOVE_ROOM', payload: room.id });
+    resetInputs();
   };
 
   const handle_delete_exit = () => {
@@ -158,6 +150,9 @@ export default function Rooms() {
           exits: new_exits,
         },
       });
+    }
+    if (exits_array.length === 0) {
+      set_exits_exist(false);
     }
   };
 
@@ -241,29 +236,15 @@ export default function Rooms() {
   );
 
   const disableSave = () => {
-    if (id === 0 && narratives_array.length === 0) {
+    if (!narrative || !name || !description) {
       return true;
-    } else if (
-      id === 0 &&
-      narratives_array.length > 0 &&
-      narratives_array[0].id === 1
-    ) {
-      return false;
-    } else if (!narrative || !name || !description) {
-      return true;
-    } else if (id !== 0) {
-      return false;
     }
-    return true;
+    return false;
   };
 
   const can_delete = () => {
     if (!selectedRadio) {
       return false;
-    } else if (selectedRadio === 'Intro') {
-      return false;
-    } else if (id > 1 && rooms_array.length > 1) {
-      return true;
     }
     return true;
   };
@@ -272,17 +253,6 @@ export default function Rooms() {
     const selectOption = array.find((object) => object.value === object_id);
     const value = selectOption ? selectOption : null;
     return value;
-  };
-
-  const logo_narrative_or_options = () => {
-    if (
-      narratives_array[0] &&
-      narratives_array[0].id === 1 &&
-      (room.id === 0 || id === 0)
-    ) {
-      return find_value_by_id(narrativesOptions, 1);
-    }
-    return find_value_by_id(narrativesOptions, narrative);
   };
 
   function exitNotUsed(
@@ -326,9 +296,8 @@ export default function Rooms() {
             label="Room name:"
             name="name"
             autoFocus
-            disabled={id === 0 || room.id === 0}
             innerRef={inputRef}
-            value={id === 0 || room.id === 0 ? 'Intro' : name}
+            value={name}
             onChange={(e) => {
               set_name(e.target.value);
             }}
@@ -336,26 +305,19 @@ export default function Rooms() {
           <Input
             label="Room description:"
             name="description"
-            disabled={id === 0 || room.id === 0}
-            value={
-              id === 0 || room.id === 0
-                ? 'You need a narrative before saving the first location.'
-                : description
-            }
+            value={description}
             onChange={(e) => set_description(e.target.value)}
           />
           <SelectList
             label="Narrative"
-            isDisabled={!!(id === 0 || room.id === 0)}
             options={narrativesOptions}
-            value={logo_narrative_or_options()}
+            value={find_value_by_id(narrativesOptions, narrative)}
             onChange={(e) => set_narrative(available_narratives[e.value].id)}
           />
           <div className="row">
             <div className="col">
               <SelectList
                 isMulti
-                isDisabled={!!(id === 0 || room.id === 0)}
                 label="Items in this location"
                 options={itemsOptions}
                 value={itemsOptions.filter((e) => {
@@ -369,7 +331,6 @@ export default function Rooms() {
             <div className="col">
               <SelectList
                 isMulti
-                isDisabled={!!(id === 0 || room.id === 0)}
                 label="Subjects in this room"
                 options={subjectsOptions}
                 value={subjectsOptions.filter((e) => {
@@ -387,7 +348,7 @@ export default function Rooms() {
             </ListContainer>
             <div className="flex justify-between pt-5">
               <Button
-                disabled={!!(id === 0 || room.id === 0)}
+                disabled={is_first_room}
                 className="text-base justify-self-center"
                 type="button"
                 onClick={() => set_showModal(true)}
@@ -395,7 +356,7 @@ export default function Rooms() {
                 Add exit
               </Button>
               <Button
-                disabled={!!(id === 0 || room.id === 0)}
+                disabled={!exits_exist}
                 className="text-base justify-self-center"
                 type="button"
                 onClick={handle_delete_exit}
@@ -439,7 +400,7 @@ export default function Rooms() {
               onChange={(e) => set_direction(e.label)}
             />
           </AddModal>
-          <div className="flex justify-between mt-5">
+          <div className="flex justify-around mt-5">
             <Button type="submit" disabled={disableSave()}>
               Save room
             </Button>

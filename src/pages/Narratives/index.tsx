@@ -12,87 +12,49 @@ export default function Narratives() {
   const [inputRef, setInputFocus] = useFocus();
   const [selectedRadio, set_selectedRadio] = useState('');
   const [narrative, set_narrative] = useState({} as NARRATIVE_TYPE);
-  const [isLogo, set_isLogo] = useState<boolean>();
 
   // init narratives state
   const [narratives_state, dispatch_narrative] = useContext(store).narratives;
 
   // holds the new narrative object
   const new_narrative = { text, description };
-  const logoExists =
-    Object.keys(narratives_state).filter((key) => {
-      return narratives_state[key].description === 'Logo';
-    }).length > 0;
 
-  const handleLogo = ({ force = null, focus_input = null } = {}) => {
-    if (force === true) {
-      set_isLogo(true);
-      set_description('Logo');
-    } else {
-      set_isLogo(false);
-    }
-    if (focus_input && inputRef.current !== document.activeElement) {
-      setInputFocus();
-    }
-  };
+  const narratives_array = narratives_state
+    ? Object.keys(narratives_state).map((key) => {
+      return narratives_state[key];
+    })
+    : [];
 
   useEffect(() => {
-    if (!logoExists) {
-      handleLogo({ force: true, focus_input: true });
-    } else if (logoExists && selectedRadio === 'Logo') {
-      handleLogo({ force: true });
-    } else if (Object.keys(narratives_state).length >= 1) {
-      handleLogo({ force: false });
-    } else if (
-      Object.keys(narratives_state).length === 1 &&
-      selectedRadio === 'Logo'
-    ) {
-      handleLogo({ force: true });
+    if (narratives_array.length > 0) {
+      set_id(narratives_array[narratives_array.length - 1].id + 1);
     }
-    if (inputRef.current !== document.activeElement && text.length < 1) {
-      setInputFocus();
-    }
-    const narratives = Object.keys(narratives_state).map((key) => {
-      return narratives_state[key];
-    });
-    if (narratives.length > 1 && logoExists) {
-      set_id(narratives[narratives.length - 1].id + 1);
-    }
-  }, [narratives_state, handleLogo]);
+  }, []);
 
   const handleChange = () => {
-    if (selectedRadio === 'Logo') {
-      handleLogo({ force: false, focus_input: true });
-    }
-    if (narrative.id && text && description) {
-      dispatch_narrative({
-        type: 'UPDATE_NARRATIVE',
-        payload: { ...narrative, text, description },
-      });
-    } else if (!logoExists) {
-      dispatch_narrative({
-        type: 'ADD_NARRATIVE',
-        payload: { new_narrative, id: 1 },
-      });
+    if (narrative.id) {
+      if (text && description) {
+        dispatch_narrative({
+          type: 'UPDATE_NARRATIVE',
+          payload: { ...narrative, text, description }
+        });
+      }
     } else if (new_narrative.text && new_narrative.description) {
+      const new_id = id + 1;
       dispatch_narrative({
         type: 'ADD_NARRATIVE',
-        payload: { new_narrative, id },
+        payload: { new_narrative, id }
       });
+      set_id(new_id);
     }
     set_narrative({} as NARRATIVE_TYPE);
     set_selectedRadio('');
     set_text('');
     set_description('');
-    handleLogo({ force: false, focus_input: true });
+    setInputFocus();
   };
 
   const handleDelete = () => {
-    if (narrative.id === 1 || logoExists) {
-      handleLogo({ force: true, focus_input: true });
-    } else {
-      handleLogo({ force: false, focus_input: true });
-    }
     set_text('');
     set_description('');
     set_narrative({} as NARRATIVE_TYPE);
@@ -124,30 +86,6 @@ export default function Narratives() {
   };
 
   const renderInputs = () => {
-    if (isLogo) {
-      return (
-        <>
-          <Input
-            label="Description - By default the first narrative is the game logo"
-            name="description"
-            disabled
-            value={description}
-            onChange={() => null}
-          />
-          <Input
-            label="Logo text:"
-            autoFocus
-            name="text"
-            multiline
-            value={text}
-            innerRef={inputRef}
-            onChange={(e) => {
-              set_text(e.target.value);
-            }}
-          />
-        </>
-      );
-    }
     return (
       <>
         <Input
@@ -187,11 +125,9 @@ export default function Narratives() {
           }}
         >
           {renderInputs()}
-          <div className="flex justify-between mt-5">
-            <Button type="submit" className="text-2xl">
-              Save narrative
-            </Button>
-            <Button type="button" onClick={handleDelete} className="text-2xl">
+          <div className="flex justify-around mt-5">
+            <Button type="submit">Save narrative</Button>
+            <Button type="button" onClick={handleDelete}>
               Delete narrative
             </Button>
           </div>

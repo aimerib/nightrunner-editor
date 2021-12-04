@@ -10,6 +10,44 @@ export type EXIT_TYPE = {
 };
 //#endregion
 
+//#region Event
+export type EVENT_TYPE = {
+  id?: number;
+  name: string;
+  location: number;
+  narrative: number;
+  destination: number;
+  required_verb: number;
+  required_subject: number;
+  required_item:number;
+  add_item: number;
+  remove_old_narrative: boolean;
+  remove_item: number;
+  required_events: number[];
+  description: string;
+};
+export type EVENT_STATE_TYPE = {
+  [key: number]: EVENT_TYPE;
+} | Record<string, never>;
+
+export type EVENT_ACTION_TYPE =
+  | {
+    type: 'ADD_EVENT';
+    payload: {
+      id: number;
+      new_event: EVENT_TYPE;
+    };
+  }
+  | {
+    type: 'UPDATE_EVENT';
+    payload: EVENT_TYPE;
+  }
+  | {
+    type: 'REMOVE_EVENT';
+    payload: number;
+  };
+//#endregion
+
 //#region Room
 export type ROOM_TYPE = {
   id?: number,

@@ -7,9 +7,11 @@ import {
   Narratives,
   Events,
   GameSettings,
+  Verbs,
 } from './pages';
 
 const data = [
+  { name: 'Verbs', component: <Verbs /> },
   { name: 'Items', component: <Items /> },
   { name: 'Subjects', component: <Subjects /> },
   { name: 'Narratives', component: <Narratives /> },

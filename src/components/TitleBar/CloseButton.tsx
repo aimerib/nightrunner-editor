@@ -1,11 +1,11 @@
 import React from 'react';
 import { appWindow } from '@tauri-apps/api/window';
-import style from './titlebar.module.css';
+import './TitleBar.css';
 
 export const CloseButton = () => {
   return (
     <div
-      className={`${style.titlebar_button} ${style.titlebar_button_close}`}
+      className="titlebar_button titlebar_button_close"
       onClick={() => appWindow.close()}
       id="titlebar-close"
     >

@@ -1,6 +1,5 @@
-import style from './radio.module.css';
+import './RadioButton.css';
 import React from 'react';
-import PropTypes from 'prop-types';
 
 export default function RadioButton({
   value,
@@ -10,6 +9,14 @@ export default function RadioButton({
   children,
   onChange,
   disabled,
+}: {
+  value: string;
+  checked: boolean;
+  name: string;
+  id: string;
+  children: React.ReactNode;
+  onChange: (event: React.MouseEvent<HTMLDivElement>) => void;
+  disabled?: boolean;
 }) {
   return (
     <div
@@ -25,7 +32,7 @@ export default function RadioButton({
         id={id}
         name={name}
         value={value}
-        className={style.hide_radio}
+        className="hide_radio"
       />
       <label
         className={`flex-1 truncate ${disabled ? '' : 'cursor-pointer'}`}
@@ -36,21 +43,3 @@ export default function RadioButton({
     </div>
   );
 }
-
-RadioButton.defaultProps = {
-  onChange: () => null,
-  checked: false,
-};
-
-RadioButton.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
-  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  name: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  checked: PropTypes.bool,
-  onChange: PropTypes.func,
-  disabled: PropTypes.bool,
-};

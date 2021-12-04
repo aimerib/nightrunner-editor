@@ -1,12 +1,12 @@
 import React from 'react';
 import { appWindow } from '@tauri-apps/api/window';
-import style from './titlebar.module.css';
+import './TitleBar.css';
 import propTypes from 'prop-types';
 
 export const RestoreButton = ({ onClick }) => {
   return (
     <div
-      className={style.titlebar_button}
+      className="titlebar_button"
       onClick={() => {
         appWindow.unmaximize();
         onClick();

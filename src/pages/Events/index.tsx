@@ -9,6 +9,7 @@ import {
   SelectList,
   Checkbox,
 } from '../../components';
+import { EVENT_TYPE } from '../../types';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
 
@@ -29,7 +30,7 @@ export default function Events() {
   const [previousId, set_id] = useState(0);
   const [inputRef, setInputFocus] = useFocus();
   const [selectedRadio, set_selectedRadio] = useState('');
-  const [event, set_event] = useState({});
+  const [event, set_event] = useState({} as EVENT_TYPE);
 
   // init events state
   const [events_state, dispatch_event] = useContext(store).events;
@@ -39,7 +40,7 @@ export default function Events() {
   const available_subjects = useContext(store).subjects[0];
 
   // holds the new event object
-  const new_event = {
+  const new_event: EVENT_TYPE = {
     name,
     location,
     narrative,
@@ -67,7 +68,7 @@ export default function Events() {
   }, []);
 
   const resetInputs = () => {
-    set_event({});
+    set_event({} as EVENT_TYPE);
     set_name('');
     set_selectedRadio('');
     set_description('');
@@ -237,7 +238,7 @@ export default function Events() {
               label="Event name:"
               name="name"
               autoFocus
-              ref={inputRef}
+              innerRef={inputRef}
               value={name}
               onChange={(e) => {
                 set_name(e.target.value);

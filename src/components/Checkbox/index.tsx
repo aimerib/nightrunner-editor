@@ -3,8 +3,8 @@ import './Checkbox.css';
 
 type CheckboxProps = {
   label: string;
-  value: string;
-  onClick: () => void;
+  value?: string;
+  onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
   checked: boolean;
   className?: string;
   name?: string;

@@ -1,15 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './addmodal.module.css';
+import './AddModal.css';
 import Button from '../Button';
 
-const CloseButton = ({ onClose }) => {
+const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
-    <div
-      className={styles.close_button}
-      onClick={() => onClose()}
-      id="titlebar-close"
-    >
+    <div className="close_button" onClick={() => onClose()} id="titlebar-close">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="19"
@@ -32,13 +27,19 @@ export default function AddModal({
   handle_save,
   title,
   handle_close,
-}) {
+}: {
+  show: boolean;
+  children: React.ReactNode;
+  handle_save: () => void;
+  title: string;
+  handle_close: () => void;
+}): JSX.Element {
   if (show === false) {
     return null;
   }
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.title_bar}>
+    <div className="wrapper">
+      <div className="title_bar">
         <div className="fixed top-3 justify-self-center"> {title}</div>
         <div className="">
           <CloseButton onClose={handle_close} />
@@ -54,23 +55,3 @@ export default function AddModal({
     </div>
   );
 }
-
-AddModal.defaultProps = {
-  handle_save: () => null,
-  title: '',
-};
-
-CloseButton.propTypes = {
-  onClose: PropTypes.func.isRequired,
-};
-
-AddModal.propTypes = {
-  show: PropTypes.bool.isRequired,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
-  handle_save: PropTypes.func,
-  handle_close: PropTypes.func.isRequired,
-  title: PropTypes.string,
-};

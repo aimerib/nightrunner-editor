@@ -48,6 +48,34 @@ export type EVENT_ACTION_TYPE =
   };
 //#endregion
 
+//#region Verb
+export type VERB_TYPE = {
+  id?: number,
+  name: string;
+  aliases: string[];
+};
+export type VERB_STATE_TYPE = {
+  [key: number]: VERB_TYPE;
+} | Record<string, never>;
+
+export type VERB_ACTION_TYPE =
+  | {
+    type: 'ADD_VERB';
+    payload: {
+      id: number;
+      new_verb: VERB_TYPE;
+    };
+  }
+  | {
+    type: 'UPDATE_VERB';
+    payload: VERB_TYPE;
+  }
+  | {
+    type: 'REMOVE_VERB';
+    payload: number;
+  };
+//#endregion
+
 //#region Room
 export type ROOM_TYPE = {
   id?: number,

@@ -1,95 +1,122 @@
 import React, { useState, useContext, useEffect } from 'react';
-import {
-  Button,
-  RadioButton,
-  ListContainer,
-  Input,
-  Checkbox,
-} from '../../components';
+import { Button, RadioButton, ListContainer, Input } from '../../components';
+import Modal from '../../components/Modal';
 import { store } from '../../store';
-import { ITEM_TYPE } from '../../types';
+import { VERB_TYPE } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Verbs(): JSX.Element {
   // init states
   const [name, set_name] = useState<string>('');
-  const [description, set_description] = useState<string>('');
-  const [can_pick, set_can_pick] = useState<boolean>(false);
   const [id, set_id] = useState<number>(1);
   const [inputRef, setInputFocus] = useFocus();
   const [selectedRadio, set_selectedRadio] = useState<string>('');
-  const [item, set_item] = useState({} as ITEM_TYPE);
+  const [selectedAliasRadio, set_selectedAliasRadio] = useState<string>('');
+  const [show_modal, set_show_modal] = useState<boolean>(false);
 
-  // init items state
-  const [items_state, dispatch_item] = useContext(store).items;
+  const [verb, set_verb] = useState({} as VERB_TYPE);
+  const [alias_name, set_alias_name] = useState<string>('');
+  const [aliases, set_aliases] = useState<string[]>([]);
 
-  // holds the new item object
-  const new_item: ITEM_TYPE = { name, description, can_pick };
+  // init verbs state
+  const [verbs_state, dispatch_item] = useContext(store).verbs;
+
+  // holds the new verb object
+  const new_verb: VERB_TYPE = { name, aliases };
 
   useEffect(() => {
-    const items: ITEM_TYPE[] = Object.keys(items_state).map(
-      (key): ITEM_TYPE => {
-        return items_state[key];
+    const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
+      (key): VERB_TYPE => {
+        return verbs_state[key];
       }
     );
-    if (items.length > 0) {
-      set_id(items[items.length - 1].id + 1);
+    if (verbs.length > 0) {
+      set_id(verbs[verbs.length - 1].id + 1);
     }
-  }, [items_state]);
+  }, [verbs_state]);
 
   const handleChange = (): void => {
-    if (item.id) {
-      if (name && description) {
+    const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
+      (key): VERB_TYPE => {
+        return verbs_state[key];
+      }
+    );
+    if (verbs.find((v) => v.name === name) && !verb.id) {
+      set_show_modal(true);
+    } else if (verb.id) {
+      if (name) {
         dispatch_item({
-          type: 'UPDATE_ITEM',
-          payload: { ...item, name, description, can_pick },
+          type: 'UPDATE_VERB',
+          payload: { ...verb, name, aliases },
         });
       }
-    } else if (new_item.name && new_item.description) {
-      dispatch_item({ type: 'ADD_ITEM', payload: { new_item, id } });
+    } else if (new_verb.name && !verbs.find((v) => v.name === name)) {
+      dispatch_item({ type: 'ADD_VERB', payload: { new_verb, id } });
     }
-    set_item({} as ITEM_TYPE);
+    set_verb({} as VERB_TYPE);
     set_selectedRadio('');
-    set_description('');
+    set_alias_name('');
     set_name('');
     setInputFocus();
-    set_can_pick(false);
+    set_aliases([]);
   };
 
   const handleDelete = (): void => {
-    set_can_pick(false);
-    set_description('');
+    set_aliases([]);
+    set_alias_name('');
     set_name('');
     set_selectedRadio('');
-    dispatch_item({ type: 'REMOVE_ITEM', payload: item.id });
+    dispatch_item({ type: 'REMOVE_VERB', payload: verb.id });
     setInputFocus();
   };
 
-  const renderItems = (): JSX.Element[] => {
-    return Object.keys(items_state).map((key): JSX.Element => {
+  const renderVerbs = (): JSX.Element[] => {
+    return Object.keys(verbs_state).map((key): JSX.Element => {
+      const aliases_string = verbs_state[key].aliases.join(', ');
       return (
         <RadioButton
-          key={items_state[key].id}
-          id={items_state[key].name}
-          name="items"
-          value={items_state[key].name}
+          key={verbs_state[key].id}
+          id={verbs_state[key].name}
+          name="verbs"
+          value={verbs_state[key].name}
           onChange={() => {
-            set_item(items_state[key]);
-            set_name(items_state[key].name);
-            set_can_pick(items_state[key].can_pick);
-            set_description(items_state[key].description);
-            set_selectedRadio(items_state[key].name);
+            set_verb(verbs_state[key]);
+            set_name(verbs_state[key].name);
+            set_aliases(verbs_state[key].aliases);
+            set_selectedRadio(verbs_state[key].name);
           }}
-          checked={selectedRadio === items_state[key].name}
+          checked={selectedRadio === verbs_state[key].name}
         >
-          {items_state[key].name} - {items_state[key].description}
+          {verbs_state[key].name} - aliases:&nbsp;&nbsp;{aliases_string}
         </RadioButton>
       );
     });
   };
 
+  const renderAliases = (): React.ReactNode => {
+    if (aliases.length > 0) {
+      return Object.keys(aliases).map((key): JSX.Element => {
+        return (
+          <RadioButton
+            key={key}
+            id={aliases[key]}
+            name="verbs"
+            value={aliases[key]}
+            onChange={() => {
+              set_selectedAliasRadio(aliases[key]);
+            }}
+            checked={selectedAliasRadio === aliases[key]}
+          >
+            {aliases[key]}
+          </RadioButton>
+        );
+      });
+    }
+    return <></>;
+  };
+
   const disabled_save = () => {
-    if (!name || !description) {
+    if (!name) {
       return true;
     }
     return false;
@@ -102,12 +129,29 @@ export default function Verbs(): JSX.Element {
     return true;
   };
 
+  const handle_add_alias = (): void => {
+    if (alias_name) {
+      set_aliases([...aliases, alias_name.toLowerCase()]);
+      set_alias_name('');
+    }
+  };
+  const handle_delete_alias = (): void => {
+    if (selectedAliasRadio) {
+      const new_aliases = aliases.filter(
+        (alias) => alias !== selectedAliasRadio
+      );
+      set_aliases(new_aliases);
+      set_alias_name('');
+      set_selectedAliasRadio('');
+    }
+  };
+
   return (
     <div className="w-full h-full bg-nr-main text-green-nr">
       <div className="grid w-full h-full grid-cols-2">
         {/* left side - content*/}
-        <ListContainer label="Existing items:">{renderItems()}</ListContainer>
-        {/* right side - form for adding more items */}
+        <ListContainer label="Existing verbs:">{renderVerbs()}</ListContainer>
+        {/* right side - form for adding more verbs */}
         <form
           className="flex flex-col gap-5 pl-3 place-content-center"
           onSubmit={(e) => {
@@ -116,7 +160,7 @@ export default function Verbs(): JSX.Element {
           }}
         >
           <Input
-            label="Item name:"
+            label="Verb:"
             name="name"
             autoFocus
             innerRef={inputRef}
@@ -125,20 +169,41 @@ export default function Verbs(): JSX.Element {
               set_name(e.target.value);
             }}
           />
-          <Input
-            multiline
-            label="Item description:"
-            name="description"
-            value={description}
-            onChange={(e) => set_description(e.target.value)}
-          />
-          <Checkbox
-            label="Item can be picked up"
-            name="can_be_picked"
-            value="can_be_picked"
-            checked={can_pick}
-            onClick={() => set_can_pick(!can_pick)}
-          />
+          <div className="h-full">
+            <div className="flex items-end justify-between gap-5 py-5">
+              <Input
+                className="flex-1"
+                label="Verb alias:"
+                name="alias_name"
+                value={alias_name}
+                onChange={(e) => {
+                  set_alias_name(e.target.value);
+                }}
+              />
+              <Button
+                disabled={!alias_name}
+                className="text-base justify-self-center"
+                type="button"
+                onClick={handle_add_alias}
+              >
+                Add alias
+              </Button>
+            </div>
+            <div className="flex flex-col justify-start gap-5">
+              <ListContainer scrollable small label="Existing verb aliases:">
+                {renderAliases()}
+              </ListContainer>
+
+              <Button
+                disabled={!selectedAliasRadio}
+                className="text-base justify-self-center"
+                type="button"
+                onClick={handle_delete_alias}
+              >
+                Delete alias
+              </Button>
+            </div>
+          </div>
           <div className="flex justify-around mt-5">
             <Button type="submit" disabled={disabled_save()}>
               Save item
@@ -153,6 +218,13 @@ export default function Verbs(): JSX.Element {
           </div>
         </form>
       </div>
+      <Modal
+        show={show_modal}
+        handle_close={() => set_show_modal(false)}
+        title="Invalid Verb"
+      >
+        <p>Verb already in use</p>
+      </Modal>
     </div>
   );
 }

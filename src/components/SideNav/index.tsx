@@ -21,8 +21,8 @@ const SideNav = ({
             <button
               className={`${
                 currentPage === index
-                  ? 'bg-nr-green text-black cursor-default'
-                  : ' hover:bg-nr-600 cursor-pointer text-green-nr'
+                  ? 'bg-nr-green text-black '
+                  : ' hover:bg-nr-600 text-green-nr'
               }
                px-2 py-4 font-logo text-2xl
                `}

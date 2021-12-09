@@ -22,8 +22,10 @@ export default function RadioButton({
     <div
       key={id}
       className={`flex pl-3 py-1 ${
-        checked ? 'bg-nr-active text-black' : ''
-      } hover:bg-nr-600`}
+        checked
+          ? 'bg-nr-active text-black '
+          : 'hover:bg-nr-600 hover:text-green-nr'
+      } `}
       onChange={disabled ? null : onChange}
       onClick={disabled ? null : onChange}
     >
@@ -34,10 +36,7 @@ export default function RadioButton({
         value={value}
         className="hide_radio"
       />
-      <label
-        className={`flex-1 truncate ${disabled ? '' : 'cursor-pointer'}`}
-        htmlFor={id}
-      >
+      <label className={'flex-1 truncate'} htmlFor={id}>
         {children}
       </label>
     </div>

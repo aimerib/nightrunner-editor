@@ -6,7 +6,7 @@ import {
   Subjects,
   Narratives,
   Events,
-  GameSettings,
+  Settings,
   Verbs,
 } from './pages';
 
@@ -17,7 +17,7 @@ const data = [
   { name: 'Narratives', component: <Narratives /> },
   { name: 'Rooms', component: <Rooms /> },
   { name: 'Events', component: <Events /> },
-  { name: 'Settings', component: <GameSettings /> },
+  { name: 'Settings', component: <Settings /> },
 ];
 
 function App() {

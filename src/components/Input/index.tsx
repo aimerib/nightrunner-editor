@@ -9,6 +9,7 @@ type ComponentProps = {
   name: string;
   label: string;
   disabled?: boolean;
+  className?: string;
 };
 
 interface InputProps extends ComponentProps {
@@ -31,10 +32,13 @@ const Input: FC<InputProps | TextAreaProps> = ({
   multiline,
   innerRef,
   disabled,
+  className,
 }): JSX.Element => {
   return (
     <div
-      className={`flex flex-col text-xl font-bold${multiline ? ' h-full' : ''}`}
+      className={`flex flex-col text-xl font-bold${
+        multiline ? ' h-full' : ''
+      } ${className ? className : ''}`}
     >
       {label && (
         <label className="pb-2" htmlFor={name}>

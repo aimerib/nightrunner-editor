@@ -1,10 +1,12 @@
 .titlebar {
-  height: 41px;
+  height: 70px;
   background: black;
   border-right: 1px rgba(55, 55, 55, 0.6) solid;
   border-left: 1px rgba(55, 55, 55, 0.6) solid;
   border-top: 1px rgba(55, 55, 55, 0.6) solid;
   user-select: none;
+}
+.titlebar-top {
   display: grid;
   grid-auto-flow: column;
   justify-content: end;
@@ -34,4 +36,19 @@
 .title {
   @apply absolute transform -translate-x-1/2 top-2 justify-self-center font-logo left-1/2;
   color: #39ff14;
+}
+.app_menu {
+  @apply px-4 cursor-default text-green-nr;
+  display: inline-block;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.menu_area {
+  @apply py-3;
+}
+.menu_item {
+  @apply flex pl-3 hover:bg-nr-green hover:text-black;
+}
+.menu_background {
+  background-color: rgb(35, 35, 35);
 }

@@ -24,6 +24,9 @@ const room_reducer = (
       delete rooms[action.payload];
       return { ...rooms };
     }
+    case 'RESET_ROOMS': {
+      return initial_rooms_state;
+    }
     default:
       return old_state;
   }

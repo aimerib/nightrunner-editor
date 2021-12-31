@@ -24,6 +24,9 @@ const verb_reducer = (
       delete verbs[action.payload];
       return { ...verbs };
     }
+    case 'RESET_VERBS': {
+      return initial_verbs_state;
+    }
     default:
       return old_state;
   }

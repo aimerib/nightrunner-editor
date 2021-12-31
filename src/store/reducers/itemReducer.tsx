@@ -24,6 +24,9 @@ const item_reducer = (
       delete items[action.payload];
       return { ...items };
     }
+    case 'RESET_ITEMS': {
+      return initial_items_state;
+    }
     default:
       return old_state;
   }

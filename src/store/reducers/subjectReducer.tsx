@@ -24,6 +24,9 @@ const subject_reducer = (
       delete subjects[action.payload];
       return { ...subjects };
     }
+    case 'RESET_SUBJECTS': {
+      return initial_subjects_state;
+    }
     default:
       return old_state;
   }

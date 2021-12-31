@@ -24,6 +24,9 @@ const event_reducer = (
       delete events[action.payload];
       return { ...events };
     }
+    case 'RESET_EVENTS': {
+      return initial_events_state;
+    }
     default:
       return old_state;
   }

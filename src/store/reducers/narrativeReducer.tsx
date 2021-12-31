@@ -25,6 +25,9 @@ const narrative_reducer = (
       delete narratives[action.payload];
       return { ...narratives };
     }
+    case 'RESET_NARRATIVES': {
+      return initial_narratives_state;
+    }
     default:
       return old_state;
   }

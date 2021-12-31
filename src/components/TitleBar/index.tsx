@@ -51,7 +51,11 @@ export default function TitleBar({ title }: { title: string }) {
       >
         File
       </div>
-      <FileMenu innerRef={subMenuRef} active={isFileMenuActive} />
+      <FileMenu
+        innerRef={subMenuRef}
+        active={isFileMenuActive}
+        setActive={setIsFileMenuActive}
+      />
     </div>
   );
 }

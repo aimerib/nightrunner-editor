@@ -37,6 +37,8 @@ interface NRContext {
   events: [EVENT_STATE_TYPE, Dispatch<EVENT_ACTION_TYPE>];
   narratives: [NARRATIVES_STATE_TYPE, Dispatch<NARRATIVE_ACTION_TYPE>];
   subjects: [SUBJECTS_STATE_TYPE, Dispatch<SUBJECT_ACTION_TYPE>];
+  new_game: () => void;
+  pages: [number, React.Dispatch<React.SetStateAction<number>>];
 }
 
 const store = createContext({} as NRContext);
@@ -72,6 +74,29 @@ const StateProvider = ({ children }) => {
     subject_reducer,
     initial_subjects_state
   );
+  const [currentPage, setCurrentPage] = React.useState(0);
+
+  const new_game = () => {
+    dispatch_verb({
+      type: 'RESET_VERBS',
+    });
+    dispatch_item({
+      type: 'RESET_ITEMS',
+    });
+    dispatch_room({
+      type: 'RESET_ROOMS',
+    });
+    dispatch_event({
+      type: 'RESET_EVENTS',
+    });
+    dispatch_narrative({
+      type: 'RESET_NARRATIVES',
+    });
+    dispatch_subject({
+      type: 'RESET_SUBJECTS',
+    });
+    setCurrentPage(0);
+  };
 
   return (
     <Provider
@@ -82,6 +107,8 @@ const StateProvider = ({ children }) => {
         events: [events_state, dispatch_event],
         narratives: [narratives_state, dispatch_narrative],
         subjects: [subjects_state, dispatch_subject],
+        new_game,
+        pages: [currentPage, setCurrentPage],
       }}
     >
       {children}

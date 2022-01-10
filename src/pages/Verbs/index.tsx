@@ -1,6 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, RadioButton, ListContainer, Input } from '../../components';
-import Modal from '../../components/Modal';
+import {
+  Button,
+  RadioButton,
+  ListContainer,
+  Input,
+  Modal,
+} from '../../components';
 import { store } from '../../store';
 import { VERB_TYPE } from '../../types';
 import { useFocus } from '../../utils';
@@ -20,28 +25,33 @@ export default function Verbs(): JSX.Element {
 
   // init verbs state
   const [verbs_state, dispatch_item] = useContext(store).verbs;
-
+  const verbs: VERB_TYPE[] = Object.keys(verbs_state).map((key): VERB_TYPE => {
+    return verbs_state[key];
+  });
   // holds the new verb object
   const new_verb: VERB_TYPE = { name, aliases };
 
   useEffect(() => {
-    const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
-      (key): VERB_TYPE => {
-        return verbs_state[key];
-      }
-    );
+    // const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
+    //   (key): VERB_TYPE => {
+    //     return verbs_state[key];
+    //   }
+    // );
     if (verbs.length > 0) {
       set_id(verbs[verbs.length - 1].id + 1);
     }
   }, [verbs_state]);
 
   const handleChange = (): void => {
-    const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
-      (key): VERB_TYPE => {
-        return verbs_state[key];
-      }
-    );
-    if (verbs.find((v) => v.name === name) && !verb.id) {
+    // const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
+    //   (key): VERB_TYPE => {
+    //     return verbs_state[key];
+    //   }
+    // );
+    if (
+      verbs.find((v) => v.name === name || v.aliases.includes(name)) &&
+      !verb.id
+    ) {
       set_show_modal(true);
     } else if (verb.id) {
       if (name) {
@@ -131,8 +141,16 @@ export default function Verbs(): JSX.Element {
 
   const handle_add_alias = (): void => {
     if (alias_name) {
-      set_aliases([...aliases, alias_name.toLowerCase()]);
-      set_alias_name('');
+      if (
+        verbs.find(
+          (v) => v.aliases.includes(alias_name) || v.name === alias_name
+        )
+      ) {
+        set_show_modal(true);
+      } else {
+        set_aliases([...aliases, alias_name.toLowerCase()]);
+        set_alias_name('');
+      }
     }
   };
   const handle_delete_alias = (): void => {
@@ -190,7 +208,7 @@ export default function Verbs(): JSX.Element {
               </Button>
             </div>
             <div className="flex flex-col justify-start gap-5">
-              <ListContainer scrollable small label="Existing verb aliases:">
+              <ListContainer scrollable small label="Existing aliases:">
                 {renderAliases()}
               </ListContainer>
 

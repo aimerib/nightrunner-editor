@@ -1,10 +1,15 @@
 import React from 'react';
-import './Modal.css';
+// import './Modal.css';
+import modal from './modal.module.css';
 import Button from '../Button';
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
-    <div className="close_button" onClick={() => onClose()} id="titlebar-close">
+    <div
+      className={modal.close_button}
+      onClick={() => onClose()}
+      id="titlebar-close"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="19"
@@ -36,20 +41,24 @@ export default function Modal({
     return null;
   }
   return (
-    <div className="wrapper">
-      <div className="title_bar">
-        <div className="fixed top-3 justify-self-center"> {title}</div>
+    <div className={modal.wrapper}>
+      <div className={modal.title_bar}>
+        <div className="fixed transform -translate-x-1/2 top-3 left-1/2">
+          {title}
+        </div>
         <div className="">
           <CloseButton onClose={handle_close} />
         </div>
       </div>
-      <div className="modal_content">{children}</div>
-      <Button
-        className="self-end mb-5 justify-self-center"
-        onClick={handle_close}
-      >
-        Ok
-      </Button>
+      <div className={modal.modal_content}>{children}</div>
+      <div className="flex self-end justify-around mb-5 justify-self-center">
+        <Button
+          className="self-end mb-5 justify-self-center"
+          onClick={handle_close}
+        >
+          Ok
+        </Button>
+      </div>
     </div>
   );
 }

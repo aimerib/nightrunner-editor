@@ -1,10 +1,15 @@
 import React from 'react';
-import './AddModal.css';
+// import './AddModal.css';
+import modal from './addmodal.module.css';
 import Button from '../Button';
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
-    <div className="close_button" onClick={() => onClose()} id="titlebar-close">
+    <div
+      className={modal.close_button}
+      onClick={() => onClose()}
+      id="titlebar-close"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="19"
@@ -38,8 +43,8 @@ export default function AddModal({
     return null;
   }
   return (
-    <div className="wrapper">
-      <div className="title_bar">
+    <div className={modal.wrapper}>
+      <div className={modal.title_bar}>
         <div className="fixed top-3 justify-self-center"> {title}</div>
         <div className="">
           <CloseButton onClose={handle_close} />

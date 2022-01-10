@@ -16,7 +16,8 @@
     "camelcase": "off",
     "no-use-before-define": "off",
     "react-hooks/exhaustive-deps": "off",
-    "react/require-default-props": "off"
+    "react/require-default-props": "off",
+    "callback-return": "off"
   },
   "plugins": ["react-hooks", "@typescript-eslint"],
   "overrides": [

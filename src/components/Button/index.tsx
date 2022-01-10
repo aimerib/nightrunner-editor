@@ -21,9 +21,9 @@ export default function Button({
     return (
       <button
         disabled={disabled}
-        className={`${disabled ? 'disabled_button' : 'button'} ${className} ${
-          disabled ? '' : 'hover:text-glow-sm'
-        } text-2.5xl`}
+        className={`${
+          disabled ? 'disabled_button' : 'button'
+        } ${className} text-2.5xl`}
         type={type === 'submit' ? 'submit' : 'button'}
         onClick={run_callback_with_delay}
       >
@@ -34,9 +34,9 @@ export default function Button({
   return (
     <button
       disabled={disabled}
-      className={`${disabled ? 'disabled_button' : 'button'} ${className} ${
-        disabled ? '' : 'hover:text-glow-sm'
-      } text-2.5xl`}
+      className={`${
+        disabled ? 'disabled_button' : 'button'
+      } ${className} text-2.5xl`}
       type={type === 'submit' ? 'submit' : 'button'}
     >
       {children}

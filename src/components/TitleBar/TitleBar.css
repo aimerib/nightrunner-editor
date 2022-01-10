@@ -45,9 +45,10 @@
 }
 .menu_area {
   @apply py-3;
+  box-shadow: 3px 4px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .menu_item {
-  @apply flex pl-3 hover:bg-nr-green hover:text-black;
+  @apply flex py-2 pl-3 hover:bg-nr-green hover:text-black;
 }
 .menu_background {
   background-color: rgb(35, 35, 35);

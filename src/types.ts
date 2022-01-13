@@ -32,21 +32,21 @@ export type EVENT_STATE_TYPE = {
 
 export type EVENT_ACTION_TYPE =
   | {
-    type: 'ADD_EVENT';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_event: EVENT_TYPE;
     };
   }
   | {
-    type: 'UPDATE_EVENT';
+    type: ActionTypes.UPDATE;
     payload: EVENT_TYPE;
   }
   | {
-    type: 'REMOVE_EVENT';
+    type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: 'RESET_EVENTS'}
+  | { type: ActionTypes.RESET}
 //#endregion
 
 //#region Verb
@@ -61,21 +61,21 @@ export type VERB_STATE_TYPE = {
 
 export type VERB_ACTION_TYPE =
   | {
-    type: 'ADD_VERB';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_verb: VERB_TYPE;
     };
   }
   | {
-    type: 'UPDATE_VERB';
+    type: ActionTypes.UPDATE;
     payload: VERB_TYPE;
   }
   | {
-    type: 'REMOVE_VERB';
+    type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: 'RESET_VERBS'};
+  | { type: ActionTypes.RESET};
 //#endregion
 
 //#region Room
@@ -95,21 +95,21 @@ export type ROOMS_STATE_TYPE = {
 
 export type ROOM_ACTION_TYPE =
   | {
-    type: 'ADD_ROOM';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_room: ROOM_TYPE;
     };
   }
   | {
-    type: 'UPDATE_ROOM';
+    type: ActionTypes.UPDATE;
     payload: ROOM_TYPE;
   }
   | {
-    type: 'REMOVE_ROOM';
+    type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: 'RESET_ROOMS'};
+  | { type: ActionTypes.RESET};
 //#endregion
 
 //#region Narrative
@@ -125,21 +125,21 @@ export type NARRATIVES_STATE_TYPE = {
 
 export type NARRATIVE_ACTION_TYPE =
   | {
-    type: 'ADD_NARRATIVE';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_narrative: NARRATIVE_TYPE;
     };
   }
   | {
-    type: 'UPDATE_NARRATIVE';
+    type: ActionTypes.UPDATE;
     payload: NARRATIVE_TYPE;
   }
   | {
-    type: 'REMOVE_NARRATIVE';
+    type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: 'RESET_NARRATIVES'};
+  | { type: ActionTypes.RESET};
 //#endregion
 
 //#region Subject
@@ -155,41 +155,41 @@ export type SUBJECTS_STATE_TYPE = {
 
 export type SUBJECT_ACTION_TYPE =
   | {
-    type: 'ADD_SUBJECT';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_subject: SUBJECT_TYPE;
     };
   }
   | {
-    type: 'UPDATE_SUBJECT';
+    type: ActionTypes.UPDATE;
     payload: SUBJECT_TYPE;
   }
   | {
-    type: 'REMOVE_SUBJECT';
+    type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: 'RESET_SUBJECTS'};
+  | { type: ActionTypes.RESET};
 //#endregion
 
 //#region Item
 export type ITEM_ACTION_TYPE =
   | {
-    type: 'ADD_ITEM';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_item: ITEM_TYPE;
     };
   }
   | {
-    type: 'UPDATE_ITEM';
+    type: ActionTypes.UPDATE;
     payload: ITEM_TYPE;
   }
   | {
-    type: 'REMOVE_ITEM';
+    type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: 'RESET_ITEMS'};
+  | { type: ActionTypes.RESET};
 
 export type ITEM_TYPE = {
   id?: number,
@@ -198,4 +198,13 @@ export type ITEM_TYPE = {
 export type ITEMS_STATE_TYPE = {
   [key: number]: ITEM_TYPE;
 } | Record<string, never>;
+//#endregion
+
+//#region ActionTypes
+export enum ActionTypes {
+  ADD = 'ADD',
+  REMOVE = 'REMOVE',
+  UPDATE = 'UPDATE',
+  RESET = 'RESET',
+}
 //#endregion

@@ -11,7 +11,7 @@ import {
 } from '../../components';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
-import { ROOM_TYPE, Exits, EXIT_TYPE } from '../../types';
+import { ROOM_TYPE, Exits, EXIT_TYPE, ActionTypes } from '../../types';
 import './Rooms.css';
 
 export default function Rooms() {
@@ -112,7 +112,7 @@ export default function Rooms() {
       if (name && description && narrative) {
         const stash = { item_ids, items: [] };
         dispatch_room({
-          type: 'UPDATE_ROOM',
+          type: ActionTypes.UPDATE,
           payload: {
             ...room,
             description,
@@ -127,14 +127,14 @@ export default function Rooms() {
       }
     } else if (new_room.name && new_room.description && new_room.narrative) {
       const new_id = id + 1;
-      dispatch_room({ type: 'ADD_ROOM', payload: { new_room, id } });
+      dispatch_room({ type: ActionTypes.ADD, payload: { new_room, id } });
       set_id(new_id);
       resetInputs();
     }
   };
 
   const handleDelete = () => {
-    dispatch_room({ type: 'REMOVE_ROOM', payload: room.id });
+    dispatch_room({ type: ActionTypes.REMOVE, payload: room.id });
     resetInputs();
   };
 
@@ -144,7 +144,7 @@ export default function Rooms() {
       delete new_exits[selected_exit.id];
       set_exits(new_exits);
       dispatch_room({
-        type: 'UPDATE_ROOM',
+        type: ActionTypes.UPDATE,
         payload: {
           ...room,
           exits: new_exits,

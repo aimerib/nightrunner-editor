@@ -4,10 +4,10 @@ import {
   RadioButton,
   ListContainer,
   Input,
-  Checkbox
+  Checkbox,
 } from '../../components';
 import { store } from '../../store';
-import { ITEM_TYPE } from '../../types';
+import { ITEM_TYPE, ActionTypes } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Items(): JSX.Element {
@@ -41,12 +41,12 @@ export default function Items(): JSX.Element {
     if (item.id) {
       if (name && description) {
         dispatch_item({
-          type: 'UPDATE_ITEM',
-          payload: { ...item, name, description, can_pick }
+          type: ActionTypes.UPDATE,
+          payload: { ...item, name, description, can_pick },
         });
       }
     } else if (new_item.name && new_item.description) {
-      dispatch_item({ type: 'ADD_ITEM', payload: { new_item, id } });
+      dispatch_item({ type: ActionTypes.ADD, payload: { new_item, id } });
     }
     set_item({} as ITEM_TYPE);
     set_selectedRadio('');
@@ -61,7 +61,7 @@ export default function Items(): JSX.Element {
     set_description('');
     set_name('');
     set_selectedRadio('');
-    dispatch_item({ type: 'REMOVE_ITEM', payload: item.id });
+    dispatch_item({ type: ActionTypes.REMOVE, payload: item.id });
     setInputFocus();
   };
 

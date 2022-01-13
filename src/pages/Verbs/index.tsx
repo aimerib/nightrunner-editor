@@ -7,7 +7,7 @@ import {
   Modal,
 } from '../../components';
 import { store } from '../../store';
-import { VERB_TYPE } from '../../types';
+import { VERB_TYPE, ActionTypes } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Verbs(): JSX.Element {
@@ -56,12 +56,12 @@ export default function Verbs(): JSX.Element {
     } else if (verb.id) {
       if (name) {
         dispatch_item({
-          type: 'UPDATE_VERB',
+          type: ActionTypes.UPDATE,
           payload: { ...verb, name, aliases },
         });
       }
     } else if (new_verb.name && !verbs.find((v) => v.name === name)) {
-      dispatch_item({ type: 'ADD_VERB', payload: { new_verb, id } });
+      dispatch_item({ type: ActionTypes.ADD, payload: { new_verb, id } });
     }
     set_verb({} as VERB_TYPE);
     set_selectedRadio('');
@@ -76,7 +76,7 @@ export default function Verbs(): JSX.Element {
     set_alias_name('');
     set_name('');
     set_selectedRadio('');
-    dispatch_item({ type: 'REMOVE_VERB', payload: verb.id });
+    dispatch_item({ type: ActionTypes.REMOVE, payload: verb.id });
     setInputFocus();
   };
 

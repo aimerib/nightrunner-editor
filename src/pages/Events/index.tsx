@@ -9,7 +9,7 @@ import {
   SelectList,
   Checkbox,
 } from '../../components';
-import { EVENT_TYPE } from '../../types';
+import { EVENT_TYPE, ActionTypes } from '../../types';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
 
@@ -89,7 +89,7 @@ export default function Events() {
     if (event.id) {
       if (name && description && narrative && required_verb && location) {
         dispatch_event({
-          type: 'UPDATE_EVENT',
+          type: ActionTypes.UPDATE,
           payload: {
             ...event,
             name,
@@ -118,9 +118,9 @@ export default function Events() {
     ) {
       const room = available_rooms[location];
       const id = previousId + 1;
-      dispatch_event({ type: 'ADD_EVENT', payload: { new_event, id } });
+      dispatch_event({ type: ActionTypes.ADD, payload: { new_event, id } });
       dispatch_rooms({
-        type: 'UPDATE_ROOM',
+        type: ActionTypes.UPDATE,
         payload: { ...room, room_events: [...room.room_events, id] },
       });
       set_id(id);
@@ -129,7 +129,7 @@ export default function Events() {
   };
 
   const handleDelete = () => {
-    dispatch_event({ type: 'REMOVE_EVENT', payload: event.id });
+    dispatch_event({ type: ActionTypes.REMOVE, payload: event.id });
     resetInputs();
   };
 

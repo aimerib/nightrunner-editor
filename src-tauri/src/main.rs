@@ -13,9 +13,9 @@ fn get_home_folder() -> String {
   let path = path::home_dir();
   if let Some(home_folder) = path {
     let path_string = home_folder.into_os_string().into_string().unwrap();
-    println!("{:?}", &path_string);
     path_string
   } else {
+    // Change this to a result and handle on frontend
     println!("No home folder found");
     '/'.to_string()
   }
@@ -42,14 +42,12 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
     let game_path = format!("{}/{}", path, name);
     fs::create_dir_all(&game_path).expect("Could not create directory");
     for (key, value) in state_items_iter {
-      println!("{}/{}.yaml", &game_path, key);
       fs::write(
         format!("{}/{}.yaml", &game_path, key),
         serde_yaml::to_string(&value).unwrap(),
       )
       .expect("Unable to write files to system");
     }
-    println!("{}/intro.yaml", &game_path);
     fs::write(
       format!("{}/intro.yaml", &game_path),
       serde_yaml::to_string(&intro).unwrap(),

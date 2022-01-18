@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
-// import { open } from '@tauri-apps/api/dialog';
+import { invoke } from '@tauri-apps/api/tauri';
+import { open } from '@tauri-apps/api/dialog';
 // import { notification } from '@tauri-apps/api';
 import { store } from '../../store';
 import { WarningModal } from '../../components';
@@ -38,8 +39,56 @@ interface Props {
 // };
 
 export const FileMenu = ({ active, innerRef, setActive }: Props) => {
-  const { new_game } = useContext(store);
+  const {
+    new_game,
+    // folder: [game_folder, set_game_folder],
+  } = useContext(store);
+  const { gameState } = useContext(store);
+  const [game_folder, set_game_folder] = gameState.folder;
   const [show_warning, set_show_warning] = useState(false);
+  const handle_new_game = async () => {
+    // const home_folder: string = await invoke('get_home_folder');
+    // const project_folder = await open({
+    //   directory: true,
+    //   multiple: false,
+    //   defaultPath: home_folder,
+    // });
+    // console.log(project_folder);
+    // if (project_folder && !Array.isArray(project_folder)) {
+    //   set_game_folder(project_folder);
+    // }
+    // console.log(game_folder);
+    new_game();
+  };
+
+  const handle_save_game = () => {
+    const game_state_array = Object.keys(gameState).map((key) => {
+      // const state_key = `${key}`
+      return { [key]: gameState[key][0] };
+    });
+    // eslint-disable-next-line no-empty-pattern
+    const parsed_game_state = game_state_array.reduce((acc, curr, {}) => {
+      return { ...acc, ...curr };
+    });
+    console.log(parsed_game_state);
+    invoke('save_game', { gameState: parsed_game_state })
+      .then((res) => console.log(res))
+      .catch((err) => console.error(err));
+    setActive(false);
+  };
+
+  const handle_load_game = async () => {
+    const home_folder: string = await invoke('get_home_folder');
+    const project_folder = await open({
+      directory: true,
+      multiple: false,
+      defaultPath: home_folder,
+    });
+    if (project_folder && !Array.isArray(project_folder)) {
+      set_game_folder(project_folder);
+    }
+    invoke('load_game', { gameFolder: project_folder });
+  };
 
   return (
     <>
@@ -58,20 +107,14 @@ export const FileMenu = ({ active, innerRef, setActive }: Props) => {
         >
           New Game
         </a>
-        <a
-          className="menu_item"
-          onClick={() => {
-            setActive(false);
-            new_game();
-          }}
-        >
+        <a className="menu_item" onClick={handle_save_game}>
           Save Game
         </a>
         <a
           className="menu_item"
           onClick={() => {
             setActive(false);
-            new_game();
+            handle_load_game();
           }}
         >
           Load Game
@@ -81,7 +124,7 @@ export const FileMenu = ({ active, innerRef, setActive }: Props) => {
         show={show_warning}
         handle_close={() => set_show_warning(false)}
         title="Are you sure?"
-        callback={new_game}
+        callback={handle_new_game}
       >
         <p>This will discard any unsaved progress.</p>
       </WarningModal>

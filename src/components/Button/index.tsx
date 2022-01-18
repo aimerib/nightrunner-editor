@@ -1,5 +1,7 @@
 import React from 'react';
+import { ButtonType } from '../../types';
 import './Button.css';
+
 export default function Button({
   children,
   onClick,
@@ -10,7 +12,7 @@ export default function Button({
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
-  type?: string;
+  type?: ButtonType;
   disabled?: boolean;
 }) {
   const run_callback_with_delay = (e) => {

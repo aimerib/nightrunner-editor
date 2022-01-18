@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 //#region Exit
 export type Exits = {
   [id: number]: EXIT_TYPE;
@@ -206,5 +208,36 @@ export enum ActionTypes {
   REMOVE = 'REMOVE',
   UPDATE = 'UPDATE',
   RESET = 'RESET',
+}
+//#endregion
+
+//#region GameState
+export type GAME_STATE_TYPE = {
+  folder: [string, Dispatch<SetStateAction<string>>];
+  name: [string, Dispatch<SetStateAction<string>>];
+  intro: [string, Dispatch<SetStateAction<string>>];
+  verbs: [VERB_STATE_TYPE, Dispatch<VERB_ACTION_TYPE>];
+  items: [ITEMS_STATE_TYPE, Dispatch<ITEM_ACTION_TYPE>];
+  rooms: [ROOMS_STATE_TYPE, Dispatch<ROOM_ACTION_TYPE>];
+  events: [EVENT_STATE_TYPE, Dispatch<EVENT_ACTION_TYPE>];
+  narratives: [NARRATIVES_STATE_TYPE, Dispatch<NARRATIVE_ACTION_TYPE>];
+  subjects: [SUBJECTS_STATE_TYPE, Dispatch<SUBJECT_ACTION_TYPE>];
+  // new_game: () => void;
+  // pages: [number, Dispatch<SetStateAction<number>>];
+};
+//#endregion
+//#region Night Runner Context
+export type NRContext = {
+  gameState: GAME_STATE_TYPE;
+  new_game: () => void;
+  save_settings: (game_name: string, game_intro: string) => void;
+  pages: [number, Dispatch<SetStateAction<number>>];
+}
+//#endregion
+
+//#region ButtonType
+export enum ButtonType {
+  SUBMIT = 'submit',
+  BUTTON = 'button',
 }
 //#endregion

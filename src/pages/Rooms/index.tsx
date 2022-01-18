@@ -11,7 +11,13 @@ import {
 } from '../../components';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
-import { ROOM_TYPE, Exits, EXIT_TYPE, ActionTypes } from '../../types';
+import {
+  ROOM_TYPE,
+  Exits,
+  EXIT_TYPE,
+  ActionTypes,
+  ButtonType,
+} from '../../types';
 import './Rooms.css';
 
 export default function Rooms() {
@@ -37,11 +43,11 @@ export default function Rooms() {
   const [room, set_room] = useState({} as ROOM_TYPE);
 
   // init rooms state
-  const [rooms_state, dispatch_room] = useContext(store).rooms;
+  const [rooms_state, dispatch_room] = useContext(store).gameState.rooms;
 
-  const available_items = useContext(store).items[0];
-  const available_narratives = useContext(store).narratives[0];
-  const available_subjects = useContext(store).subjects[0];
+  const available_items = useContext(store).gameState.items[0];
+  const available_narratives = useContext(store).gameState.narratives[0];
+  const available_subjects = useContext(store).gameState.subjects[0];
 
   // holds the new room object
   const new_room: ROOM_TYPE = {
@@ -350,7 +356,7 @@ export default function Rooms() {
               <Button
                 disabled={is_first_room}
                 className="text-base justify-self-center"
-                type="button"
+                type={ButtonType.BUTTON}
                 onClick={() => set_showModal(true)}
               >
                 Add exit
@@ -358,7 +364,7 @@ export default function Rooms() {
               <Button
                 disabled={!exits_exist}
                 className="text-base justify-self-center"
-                type="button"
+                type={ButtonType.BUTTON}
                 onClick={handle_delete_exit}
               >
                 Delete exit
@@ -401,12 +407,12 @@ export default function Rooms() {
             />
           </AddModal>
           <div className="flex justify-around mt-5">
-            <Button type="submit" disabled={disableSave()}>
+            <Button type={ButtonType.SUBMIT} disabled={disableSave()}>
               Save room
             </Button>
             <Button
               disabled={!can_delete()}
-              type="button"
+              type={ButtonType.BUTTON}
               onClick={handleDelete}
             >
               Delete room

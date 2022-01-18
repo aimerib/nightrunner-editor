@@ -7,7 +7,7 @@ import {
   Modal,
 } from '../../components';
 import { store } from '../../store';
-import { VERB_TYPE, ActionTypes } from '../../types';
+import { VERB_TYPE, ActionTypes, ButtonType } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Verbs(): JSX.Element {
@@ -24,7 +24,7 @@ export default function Verbs(): JSX.Element {
   const [aliases, set_aliases] = useState<string[]>([]);
 
   // init verbs state
-  const [verbs_state, dispatch_item] = useContext(store).verbs;
+  const [verbs_state, dispatch_item] = useContext(store).gameState.verbs;
   const verbs: VERB_TYPE[] = Object.keys(verbs_state).map((key): VERB_TYPE => {
     return verbs_state[key];
   });
@@ -32,22 +32,12 @@ export default function Verbs(): JSX.Element {
   const new_verb: VERB_TYPE = { name, aliases };
 
   useEffect(() => {
-    // const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
-    //   (key): VERB_TYPE => {
-    //     return verbs_state[key];
-    //   }
-    // );
     if (verbs.length > 0) {
       set_id(verbs[verbs.length - 1].id + 1);
     }
   }, [verbs_state]);
 
   const handleChange = (): void => {
-    // const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
-    //   (key): VERB_TYPE => {
-    //     return verbs_state[key];
-    //   }
-    // );
     if (
       verbs.find((v) => v.name === name || v.aliases.includes(name)) &&
       !verb.id
@@ -201,7 +191,7 @@ export default function Verbs(): JSX.Element {
               <Button
                 disabled={!alias_name}
                 className="text-base justify-self-center"
-                type="button"
+                type={ButtonType.BUTTON}
                 onClick={handle_add_alias}
               >
                 Add alias
@@ -215,7 +205,7 @@ export default function Verbs(): JSX.Element {
               <Button
                 disabled={!selectedAliasRadio}
                 className="text-base justify-self-center"
-                type="button"
+                type={ButtonType.BUTTON}
                 onClick={handle_delete_alias}
               >
                 Delete alias
@@ -223,11 +213,11 @@ export default function Verbs(): JSX.Element {
             </div>
           </div>
           <div className="flex justify-around mt-5">
-            <Button type="submit" disabled={disabled_save()}>
+            <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
               Save item
             </Button>
             <Button
-              type="button"
+              type={ButtonType.BUTTON}
               disabled={disabled_delete()}
               onClick={handleDelete}
             >

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Button, RadioButton, ListContainer, Input } from '../../components';
 import { store } from '../../store';
-import { NARRATIVE_TYPE, ActionTypes } from '../../types';
+import { NARRATIVE_TYPE, ActionTypes, ButtonType } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Narratives() {
@@ -14,7 +14,8 @@ export default function Narratives() {
   const [narrative, set_narrative] = useState({} as NARRATIVE_TYPE);
 
   // init narratives state
-  const [narratives_state, dispatch_narrative] = useContext(store).narratives;
+  const [narratives_state, dispatch_narrative] =
+    useContext(store).gameState.narratives;
 
   // holds the new narrative object
   const new_narrative = { text, description };
@@ -140,11 +141,11 @@ export default function Narratives() {
         >
           {renderInputs()}
           <div className="flex justify-around mt-5">
-            <Button type="submit" disabled={disabled_save()}>
+            <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
               Save narrative
             </Button>
             <Button
-              type="button"
+              type={ButtonType.BUTTON}
               disabled={disabled_delete()}
               onClick={handleDelete}
             >

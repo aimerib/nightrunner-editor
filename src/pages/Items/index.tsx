@@ -7,7 +7,7 @@ import {
   Checkbox,
 } from '../../components';
 import { store } from '../../store';
-import { ITEM_TYPE, ActionTypes } from '../../types';
+import { ITEM_TYPE, ActionTypes, ButtonType } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Items(): JSX.Element {
@@ -21,7 +21,7 @@ export default function Items(): JSX.Element {
   const [item, set_item] = useState({} as ITEM_TYPE);
 
   // init items state
-  const [items_state, dispatch_item] = useContext(store).items;
+  const [items_state, dispatch_item] = useContext(store).gameState.items;
 
   // holds the new item object
   const new_item: ITEM_TYPE = { name, description, can_pick };
@@ -140,11 +140,11 @@ export default function Items(): JSX.Element {
             onClick={() => set_can_pick(!can_pick)}
           />
           <div className="flex justify-around mt-5">
-            <Button type="submit" disabled={disabled_save()}>
+            <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
               Save item
             </Button>
             <Button
-              type="button"
+              type={ButtonType.BUTTON}
               disabled={disabled_delete()}
               onClick={handleDelete}
             >

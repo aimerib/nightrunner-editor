@@ -9,7 +9,7 @@ import {
   SelectList,
   Checkbox,
 } from '../../components';
-import { EVENT_TYPE, ActionTypes } from '../../types';
+import { EVENT_TYPE, ActionTypes, ButtonType } from '../../types';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
 
@@ -33,11 +33,11 @@ export default function Events() {
   const [event, set_event] = useState({} as EVENT_TYPE);
 
   // init events state
-  const [events_state, dispatch_event] = useContext(store).events;
-  const available_items = useContext(store).items[0];
-  const available_narratives = useContext(store).narratives[0];
-  const [available_rooms, dispatch_rooms] = useContext(store).rooms;
-  const available_subjects = useContext(store).subjects[0];
+  const [events_state, dispatch_event] = useContext(store).gameState.events;
+  const available_items = useContext(store).gameState.items[0];
+  const available_narratives = useContext(store).gameState.narratives[0];
+  const [available_rooms, dispatch_rooms] = useContext(store).gameState.rooms;
+  const available_subjects = useContext(store).gameState.subjects[0];
 
   // holds the new event object
   const new_event: EVENT_TYPE = {
@@ -358,11 +358,11 @@ export default function Events() {
               </div>
             </div>
             <div className="flex self-end justify-around mt-5">
-              <Button type="submit" disabled={disabled_save()}>
+              <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
                 Save event
               </Button>
               <Button
-                type="button"
+                type={ButtonType.BUTTON}
                 disabled={disabled_delete()}
                 onClick={handleDelete}
               >

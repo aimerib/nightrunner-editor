@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Button, RadioButton, ListContainer, Input } from '../../components';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
-import { SUBJECT_TYPE, ActionTypes } from '../../types';
+import { SUBJECT_TYPE, ActionTypes, ButtonType } from '../../types';
 
 export default function Subjects() {
   // init states
@@ -14,7 +14,8 @@ export default function Subjects() {
   const [subject, set_subject] = useState({} as SUBJECT_TYPE);
 
   // init items state
-  const [subjects_state, dispatch_subject] = useContext(store).subjects;
+  const [subjects_state, dispatch_subject] =
+    useContext(store).gameState.subjects;
 
   // holds the new item object
   const new_subject: SUBJECT_TYPE = { name, description };
@@ -123,11 +124,11 @@ export default function Subjects() {
             onChange={(e) => set_description(e.target.value)}
           />
           <div className="flex justify-around mt-5">
-            <Button type="submit" disabled={disabled_save()}>
+            <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
               Save subject
             </Button>
             <Button
-              type="button"
+              type={ButtonType.BUTTON}
               disabled={disabled_delete()}
               onClick={handleDelete}
             >

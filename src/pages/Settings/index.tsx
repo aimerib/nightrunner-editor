@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Input } from '../../components';
 import { store } from '../../store';
 import { ButtonType } from '../../types';
-import { useFocus } from '../../utils';
+// import { useFocus } from '../../utils';
 import { invoke } from '@tauri-apps/api/tauri';
 import { open } from '@tauri-apps/api/dialog';
 
@@ -14,13 +14,19 @@ export default function Settings() {
   const save_settings = useContext(store).save_settings;
   const [name, set_name] = useState(game_name);
   const [intro, set_intro] = useState(game_intro);
-  const [inputRef, setInputFocus] = useFocus();
+  // const [inputRef, setInputFocus] = useFocus();
   useEffect(() => {
-    if (!name) {
-      setInputFocus();
-    }
+    // if (!name) {
+    //   setInputFocus();
+    // }
     if (name !== game_name || intro !== game_intro) {
-      save_settings(name, intro);
+      if (!name && game_name) {
+        set_name(game_name);
+      } else if (!intro && game_intro) {
+        set_intro(game_intro);
+      } else {
+        save_settings(name, intro);
+      }
     }
   }, [name, intro]);
   // const handle_save = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,7 +57,7 @@ export default function Settings() {
         autoFocus
         value={game_name}
         onChange={(e) => set_name(e.target.value)}
-        innerRef={inputRef}
+        // innerRef={inputRef}
       />
       <Input
         label="Game Introduction:"

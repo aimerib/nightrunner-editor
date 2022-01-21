@@ -23,7 +23,7 @@ import './Rooms.css';
 export default function Rooms() {
   // init states
   const [description, set_description] = useState('');
-  const [exits, set_exits] = useState<Exits>(null);
+  const [exits, set_exits] = useState<Exits>([]);
   const [name, set_name] = useState('');
   const [item_ids, set_item_ids] = useState([]);
   const [narrative, set_narrative] = useState<number>(null);
@@ -103,7 +103,7 @@ export default function Rooms() {
 
   const resetInputs = () => {
     set_description('');
-    set_exits(null);
+    set_exits([]);
     set_name('');
     set_item_ids([]);
     set_narrative(null);

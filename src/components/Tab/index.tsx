@@ -1,9 +1,19 @@
-/*eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-export default function Tab({ children, selected, name, handle_selected }) {
+type TabProps = {
+  children: JSX.Element;
+  selected?: boolean;
+  name: string;
+  handle_selected: (name: string) => void;
+};
+export default function Tab({
+  children,
+  selected,
+  name,
+  handle_selected,
+}: TabProps): JSX.Element {
   // state
   const [window_height, set_window_height] = useState(0);
   const [window_width, set_window_width] = useState(0);

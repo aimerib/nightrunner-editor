@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useContext, useEffect } from 'react';
 import {
@@ -18,7 +17,7 @@ import {
   ActionTypes,
   ButtonType,
 } from '../../types';
-import './Rooms.css';
+import style from './rooms.module.css';
 
 export default function Rooms() {
   // init states
@@ -36,7 +35,7 @@ export default function Rooms() {
   const [is_first_room, set_is_first_room] = useState<boolean>(null);
   const [selected_exit, set_selected_exit] = useState<EXIT_TYPE>(null);
 
-  const [id, set_id] = useState(0);
+  const [id, set_id] = useState(1);
   const [inputRef, setInputFocus] = useFocus();
   const [selectedExitRadio, set_selectedExitRadio] = useState(null);
   const [selectedRadio, set_selectedRadio] = useState(null);
@@ -320,8 +319,8 @@ export default function Rooms() {
             value={find_value_by_id(narrativesOptions, narrative)}
             onChange={(e) => set_narrative(available_narratives[e.value].id)}
           />
-          <div className="row">
-            <div className="col">
+          <div className={style.row}>
+            <div className={style.col}>
               <SelectList
                 isMulti
                 label="Items in this location"
@@ -334,7 +333,7 @@ export default function Rooms() {
                 }}
               />
             </div>
-            <div className="col">
+            <div className={style.col}>
               <SelectList
                 isMulti
                 label="Subjects in this room"
@@ -381,8 +380,8 @@ export default function Rooms() {
               label="To location"
               options={roomsOptions.filter(({ value: exit_location }) => {
                 return (
-                  location !== room.id &&
-                  exit_location !== 0 &&
+                  exit_location !== room.id &&
+                  // exit_location !== 0 &&
                   exitNotUsed(exit_location, exits_array)
                 );
               })}

@@ -1,12 +1,11 @@
 import React from 'react';
 import { appWindow } from '@tauri-apps/api/window';
-import './TitleBar.css';
-import propTypes from 'prop-types';
+import title_bar from './title_bar.module.css';
 
-export const RestoreButton = ({ onClick }) => {
+export const RestoreButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <div
-      className="titlebar_button"
+      className={title_bar.titlebar_button}
       onClick={() => {
         appWindow.unmaximize();
         onClick();
@@ -27,12 +26,4 @@ export const RestoreButton = ({ onClick }) => {
       </svg>
     </div>
   );
-};
-
-RestoreButton.defaultProps = {
-  onClick: () => null,
-};
-RestoreButton.displayName = 'RestoreButton';
-RestoreButton.propTypes = {
-  onClick: propTypes.func,
 };

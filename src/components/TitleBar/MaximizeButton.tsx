@@ -1,11 +1,10 @@
 import React from 'react';
 import { appWindow } from '@tauri-apps/api/window';
-import './TitleBar.css';
-import propTypes from 'prop-types';
+import title_bar from './title_bar.module.css';
 export const MaximizeButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <div
-      className="titlebar_button"
+      className={title_bar.titlebar_button}
       onClick={() => {
         appWindow.maximize();
         onClick();
@@ -40,11 +39,4 @@ export const MaximizeButton = ({ onClick }: { onClick: () => void }) => {
       </svg>
     </div>
   );
-};
-MaximizeButton.defaultProps = {
-  onClick: () => null,
-};
-MaximizeButton.displayName = 'MaximizeButton';
-MaximizeButton.propTypes = {
-  onClick: propTypes.func,
 };

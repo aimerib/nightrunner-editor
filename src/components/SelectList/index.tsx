@@ -1,4 +1,3 @@
-/*eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import Select, { components } from 'react-select';

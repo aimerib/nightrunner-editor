@@ -27,6 +27,9 @@ const item_reducer = (
     case ActionTypes.RESET: {
       return initial_items_state;
     }
+    case ActionTypes.LOAD: {
+      return { ...action.payload };
+    }
     default:
       return old_state;
   }

@@ -1,6 +1,5 @@
 import modal from './warningmodal.module.css';
 import React from 'react';
-// import './Modal.css';
 import Button from '../Button';
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => {

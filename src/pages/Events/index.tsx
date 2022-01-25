@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useContext, useEffect } from 'react';
 import {

@@ -6,10 +6,8 @@ import './assets/libertyisland.ttf';
 import { StateProvider } from './store';
 
 ReactDOM.render(
-  // <React.StrictMode>
   <StateProvider>
     <App />
   </StateProvider>,
-  // </React.StrictMode>,
   document.getElementById('root')
 );

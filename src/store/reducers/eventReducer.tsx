@@ -27,6 +27,9 @@ const event_reducer = (
     case ActionTypes.RESET: {
       return initial_events_state;
     }
+    case ActionTypes.LOAD: {
+      return { ...action.payload };
+    }
     default:
       return old_state;
   }

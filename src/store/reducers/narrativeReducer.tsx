@@ -28,6 +28,9 @@ const narrative_reducer = (
     case ActionTypes.RESET: {
       return initial_narratives_state;
     }
+    case ActionTypes.LOAD: {
+      return { ...action.payload };
+    }
     default:
       return old_state;
   }

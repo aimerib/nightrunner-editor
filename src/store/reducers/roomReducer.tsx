@@ -27,6 +27,9 @@ const room_reducer = (
     case ActionTypes.RESET: {
       return initial_rooms_state;
     }
+    case ActionTypes.LOAD: {
+      return { ...action.payload };
+    }
     default:
       return old_state;
   }

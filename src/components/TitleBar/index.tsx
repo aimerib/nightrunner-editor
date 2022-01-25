@@ -3,7 +3,7 @@ import { MinimizeButton } from './MinimizeButton';
 import { MaximizeButton } from './MaximizeButton';
 import { RestoreButton } from './RestoreButton';
 import { CloseButton } from './CloseButton';
-import './TitleBar.css';
+import title_bar from './title_bar.module.css';
 import { FileMenu } from './FileMenu';
 
 export default function TitleBar({ title }: { title: string }) {
@@ -29,7 +29,7 @@ export default function TitleBar({ title }: { title: string }) {
   }, [subMenuRef, menuRef]);
 
   return (
-    <div className="titlebar">
+    <div className={title_bar.titlebar}>
       <div data-tauri-drag-region className="titlebar-top">
         <div data-tauri-drag-region className="title">
           <p data-tauri-drag-region className="cursor-default">
@@ -46,7 +46,9 @@ export default function TitleBar({ title }: { title: string }) {
       </div>
       <div
         ref={menuRef}
-        className={`${isFileMenuActive ? 'menu_background' : ''} app_menu`}
+        className={`${isFileMenuActive ? title_bar.menu_background : ''} ${
+          title_bar.app_menu
+        }`}
         onClick={() => setIsFileMenuActive(!isFileMenuActive)}
       >
         File

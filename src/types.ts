@@ -49,6 +49,8 @@ export type EVENT_ACTION_TYPE =
     payload: number;
   }
   | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: EVENT_STATE_TYPE};
+
 //#endregion
 
 //#region Verb
@@ -77,7 +79,9 @@ export type VERB_ACTION_TYPE =
     type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: ActionTypes.RESET};
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: VERB_STATE_TYPE};
+
 //#endregion
 
 //#region Room
@@ -111,7 +115,8 @@ export type ROOM_ACTION_TYPE =
     type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: ActionTypes.RESET};
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: ROOMS_STATE_TYPE};
 //#endregion
 
 //#region Narrative
@@ -141,7 +146,9 @@ export type NARRATIVE_ACTION_TYPE =
     type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: ActionTypes.RESET};
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: NARRATIVES_STATE_TYPE};
+
 //#endregion
 
 //#region Subject
@@ -171,7 +178,9 @@ export type SUBJECT_ACTION_TYPE =
     type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: ActionTypes.RESET};
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: SUBJECTS_STATE_TYPE};
+
 //#endregion
 
 //#region Item
@@ -191,7 +200,9 @@ export type ITEM_ACTION_TYPE =
     type: ActionTypes.REMOVE;
     payload: number;
   }
-  | { type: ActionTypes.RESET};
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: ITEMS_STATE_TYPE};
+
 
 export type ITEM_TYPE = {
   id?: number,
@@ -208,6 +219,7 @@ export enum ActionTypes {
   REMOVE = 'REMOVE',
   UPDATE = 'UPDATE',
   RESET = 'RESET',
+  LOAD = 'LOAD',
 }
 //#endregion
 
@@ -222,14 +234,23 @@ export type GAME_STATE_TYPE = {
   events: [EVENT_STATE_TYPE, Dispatch<EVENT_ACTION_TYPE>];
   narratives: [NARRATIVES_STATE_TYPE, Dispatch<NARRATIVE_ACTION_TYPE>];
   subjects: [SUBJECTS_STATE_TYPE, Dispatch<SUBJECT_ACTION_TYPE>];
-  // new_game: () => void;
-  // pages: [number, Dispatch<SetStateAction<number>>];
 };
 //#endregion
+
+export type GAME_SETTINGS_TYPE = {
+  intro: string;
+  verbs: VERB_STATE_TYPE;
+  items: ITEMS_STATE_TYPE;
+  rooms: ROOMS_STATE_TYPE;
+  events: EVENT_STATE_TYPE;
+  narratives: NARRATIVES_STATE_TYPE;
+  subjects: SUBJECTS_STATE_TYPE;
+};
 //#region Night Runner Context
 export type NRContext = {
   gameState: GAME_STATE_TYPE;
   new_game: () => void;
+  load_game: (game_settings: GAME_SETTINGS_TYPE) => void;
   save_settings: (game_name: string, game_intro: string) => void;
   pages: [number, Dispatch<SetStateAction<number>>];
 }

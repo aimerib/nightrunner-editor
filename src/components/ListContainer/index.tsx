@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import './ListContainer.css';
+import list_container from './list_container.module.css';
 
 type ListContainerProps = {
   /** @param {React.ReactNode} children - Elements to be rendered in the list */
@@ -47,8 +47,8 @@ const ListContainer = ({
         ref={listContainerRef}
         style={{ height: decide_height() }}
         className={`bg-nr-900 ring-inset ring-gray-900 ring-1 nr-input${
-          scrollable ? ' scrollable' : ''
-        } ${small ? 'small' : ''}`}
+          scrollable ? list_container.listscrollable : ''
+        } ${small ? list_container.small : ''}`}
       >
         {children ? children : <span>No exits yet</span>}
       </div>

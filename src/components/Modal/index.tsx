@@ -1,5 +1,4 @@
 import React from 'react';
-// import './Modal.css';
 import modal from './modal.module.css';
 import Button from '../Button';
 

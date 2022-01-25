@@ -1,7 +1,7 @@
 import React from 'react';
-// import './AddModal.css';
 import modal from './addmodal.module.css';
 import Button from '../Button';
+import { ButtonType } from '../../types';
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
@@ -53,6 +53,7 @@ export default function AddModal({
       <div className="flex flex-col px-5 pt-10 ">{children}</div>
       <Button
         className="self-end mb-5 justify-self-center"
+        type={ButtonType.BUTTON}
         onClick={handle_save}
       >
         Add

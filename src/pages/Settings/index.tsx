@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Input } from '../../components';
 import { store } from '../../store';
 import { ButtonType } from '../../types';
-// import { useFocus } from '../../utils';
 import { invoke } from '@tauri-apps/api/tauri';
 import { open } from '@tauri-apps/api/dialog';
 
@@ -14,11 +13,7 @@ export default function Settings() {
   const save_settings = useContext(store).save_settings;
   const [name, set_name] = useState(game_name);
   const [intro, set_intro] = useState(game_intro);
-  // const [inputRef, setInputFocus] = useFocus();
   useEffect(() => {
-    // if (!name) {
-    //   setInputFocus();
-    // }
     if (name !== game_name || intro !== game_intro) {
       if (!name && game_name) {
         set_name(game_name);
@@ -29,35 +24,15 @@ export default function Settings() {
       }
     }
   }, [name, intro]);
-  // const handle_save = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   if (!game_folder) {
-  //     const home_folder: string = await invoke('get_home_folder');
-  //     const project_folder = await open({
-  //       directory: true,
-  //       multiple: false,
-  //       defaultPath: home_folder,
-  //     });
-  //     if (project_folder && !Array.isArray(project_folder)) {
-  //       set_game_folder(project_folder);
-  //     }
-  //   }
-  //   if (name && intro) {
-  //     save_settings(name, intro);
-  //   }
-  // };
+
   return (
-    <div
-      // onSubmit={handle_save}
-      className="flex flex-col w-full h-full gap-5 bg-nr-main text-green-nr"
-    >
+    <div className="flex flex-col w-full h-full gap-5 bg-nr-main text-green-nr">
       <Input
         label="Game Name:"
         name="description"
         autoFocus
         value={game_name}
         onChange={(e) => set_name(e.target.value)}
-        // innerRef={inputRef}
       />
       <Input
         label="Game Introduction:"

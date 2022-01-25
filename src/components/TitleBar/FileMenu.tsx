@@ -4,21 +4,14 @@ import { open } from '@tauri-apps/api/dialog';
 import { path } from '@tauri-apps/api';
 import { notification } from '@tauri-apps/api';
 import { store } from '../../store';
-import { WarningModal } from '../../components';
+import { Modal, WarningModal } from '../../components';
+import { GAME_SETTINGS_TYPE } from '../../types';
 
 interface Props {
   active: boolean;
   innerRef: React.RefObject<HTMLDivElement>;
   setActive: (active: boolean) => void;
 }
-
-// FUTURE WORK
-// const handleNewProject = async () => {
-//   const name = await open({
-//     directory: true,
-//     multiple: false,
-//   });
-// };
 
 const notify = (text: string) => {
   const message = {
@@ -42,6 +35,8 @@ const notify = (text: string) => {
 export const FileMenu = ({ active, innerRef, setActive }: Props) => {
   const { new_game } = useContext(store);
   const { gameState } = useContext(store);
+  const { load_game } = useContext(store);
+  const [show_saved_warning, set_show_saved_warning] = useState(false);
   const set_game_name = gameState.name[1];
   const set_game_folder = gameState.folder[1];
   const [show_warning, set_show_warning] = useState(false);
@@ -58,7 +53,10 @@ export const FileMenu = ({ active, innerRef, setActive }: Props) => {
       return { ...acc, ...curr };
     });
     invoke('save_game', { gameState: parsed_game_state })
-      .then((res) => res)
+      .then((res) => {
+        notify(res as string);
+        set_show_saved_warning(true);
+      })
       .catch((err) => console.error(err));
     setActive(false);
   };
@@ -75,13 +73,12 @@ export const FileMenu = ({ active, innerRef, setActive }: Props) => {
       const game_name =
         project_folder_strings[project_folder_strings.length - 1];
       const game_folder = project_folder_strings.slice(0, -1).join(path.sep);
-      console.log(game_name, game_folder);
       set_game_folder(game_folder);
       set_game_name(game_name);
-      const game_state = await invoke('load_game', {
+      const game_state: GAME_SETTINGS_TYPE = await invoke('load_game', {
         gameFolder: project_folder,
       });
-      console.log(game_state);
+      load_game(game_state);
     } else {
       notify("Couldn't open project");
     }
@@ -125,6 +122,13 @@ export const FileMenu = ({ active, innerRef, setActive }: Props) => {
       >
         <p>This will discard any unsaved progress.</p>
       </WarningModal>
+      <Modal
+        show={show_saved_warning}
+        handle_close={() => set_show_saved_warning(false)}
+        title="Success!"
+      >
+        <p>Game saved.</p>
+      </Modal>
     </>
   );
 };

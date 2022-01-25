@@ -36,6 +36,7 @@ export default function Events() {
   const [events_state, dispatch_event] = useContext(store).gameState.events;
   const available_items = useContext(store).gameState.items[0];
   const available_narratives = useContext(store).gameState.narratives[0];
+  const available_verbs = useContext(store).gameState.verbs[0];
   const [available_rooms, dispatch_rooms] = useContext(store).gameState.rooms;
   const available_subjects = useContext(store).gameState.subjects[0];
 
@@ -194,11 +195,12 @@ export default function Events() {
     };
   });
 
-  const verbsOptions = [
-    { label: 'go', value: 1 },
-    { label: 'take', value: 2 },
-    { label: 'talk', value: 3 },
-  ];
+  const verbsOptions = Object.keys(available_verbs).map((key) => {
+    return {
+      label: available_verbs[key].name,
+      value: available_verbs[key].id,
+    };
+  });
 
   const find_value_by_id = (array, id) => {
     const selectOption = array.find((object) => object.value === id);

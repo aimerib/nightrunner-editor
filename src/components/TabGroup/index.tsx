@@ -6,7 +6,7 @@ export default function TabGroup({
 }: {
   children: JSX.Element[];
   className?: string;
-}) {
+}): JSX.Element {
   const [selected_tab, set_selected_tab] = useState(0);
   const handle_selected_tab = (tab) => {
     const selected = children.map((c) => c.props.name).indexOf(tab);

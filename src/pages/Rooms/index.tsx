@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useContext, useEffect } from 'react';
 import {
@@ -11,13 +10,19 @@ import {
 } from '../../components';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
-import { ROOM_TYPE, Exits, EXIT_TYPE } from '../../types';
-import './Rooms.css';
+import {
+  ROOM_TYPE,
+  Exits,
+  EXIT_TYPE,
+  ActionTypes,
+  ButtonType,
+} from '../../types';
+import style from './rooms.module.css';
 
 export default function Rooms() {
   // init states
   const [description, set_description] = useState('');
-  const [exits, set_exits] = useState<Exits>(null);
+  const [exits, set_exits] = useState<Exits>([]);
   const [name, set_name] = useState('');
   const [item_ids, set_item_ids] = useState([]);
   const [narrative, set_narrative] = useState<number>(null);
@@ -30,18 +35,18 @@ export default function Rooms() {
   const [is_first_room, set_is_first_room] = useState<boolean>(null);
   const [selected_exit, set_selected_exit] = useState<EXIT_TYPE>(null);
 
-  const [id, set_id] = useState(0);
+  const [id, set_id] = useState(1);
   const [inputRef, setInputFocus] = useFocus();
   const [selectedExitRadio, set_selectedExitRadio] = useState(null);
   const [selectedRadio, set_selectedRadio] = useState(null);
   const [room, set_room] = useState({} as ROOM_TYPE);
 
   // init rooms state
-  const [rooms_state, dispatch_room] = useContext(store).rooms;
+  const [rooms_state, dispatch_room] = useContext(store).gameState.rooms;
 
-  const available_items = useContext(store).items[0];
-  const available_narratives = useContext(store).narratives[0];
-  const available_subjects = useContext(store).subjects[0];
+  const available_items = useContext(store).gameState.items[0];
+  const available_narratives = useContext(store).gameState.narratives[0];
+  const available_subjects = useContext(store).gameState.subjects[0];
 
   // holds the new room object
   const new_room: ROOM_TYPE = {
@@ -97,7 +102,7 @@ export default function Rooms() {
 
   const resetInputs = () => {
     set_description('');
-    set_exits(null);
+    set_exits([]);
     set_name('');
     set_item_ids([]);
     set_narrative(null);
@@ -112,7 +117,7 @@ export default function Rooms() {
       if (name && description && narrative) {
         const stash = { item_ids, items: [] };
         dispatch_room({
-          type: 'UPDATE_ROOM',
+          type: ActionTypes.UPDATE,
           payload: {
             ...room,
             description,
@@ -127,14 +132,14 @@ export default function Rooms() {
       }
     } else if (new_room.name && new_room.description && new_room.narrative) {
       const new_id = id + 1;
-      dispatch_room({ type: 'ADD_ROOM', payload: { new_room, id } });
+      dispatch_room({ type: ActionTypes.ADD, payload: { new_room, id } });
       set_id(new_id);
       resetInputs();
     }
   };
 
   const handleDelete = () => {
-    dispatch_room({ type: 'REMOVE_ROOM', payload: room.id });
+    dispatch_room({ type: ActionTypes.REMOVE, payload: room.id });
     resetInputs();
   };
 
@@ -144,7 +149,7 @@ export default function Rooms() {
       delete new_exits[selected_exit.id];
       set_exits(new_exits);
       dispatch_room({
-        type: 'UPDATE_ROOM',
+        type: ActionTypes.UPDATE,
         payload: {
           ...room,
           exits: new_exits,
@@ -314,8 +319,8 @@ export default function Rooms() {
             value={find_value_by_id(narrativesOptions, narrative)}
             onChange={(e) => set_narrative(available_narratives[e.value].id)}
           />
-          <div className="row">
-            <div className="col">
+          <div className={style.row}>
+            <div className={style.col}>
               <SelectList
                 isMulti
                 label="Items in this location"
@@ -328,7 +333,7 @@ export default function Rooms() {
                 }}
               />
             </div>
-            <div className="col">
+            <div className={style.col}>
               <SelectList
                 isMulti
                 label="Subjects in this room"
@@ -350,7 +355,7 @@ export default function Rooms() {
               <Button
                 disabled={is_first_room}
                 className="text-base justify-self-center"
-                type="button"
+                type={ButtonType.BUTTON}
                 onClick={() => set_showModal(true)}
               >
                 Add exit
@@ -358,7 +363,7 @@ export default function Rooms() {
               <Button
                 disabled={!exits_exist}
                 className="text-base justify-self-center"
-                type="button"
+                type={ButtonType.BUTTON}
                 onClick={handle_delete_exit}
               >
                 Delete exit
@@ -375,8 +380,8 @@ export default function Rooms() {
               label="To location"
               options={roomsOptions.filter(({ value: exit_location }) => {
                 return (
-                  location !== room.id &&
-                  exit_location !== 0 &&
+                  exit_location !== room.id &&
+                  // exit_location !== 0 &&
                   exitNotUsed(exit_location, exits_array)
                 );
               })}
@@ -401,12 +406,12 @@ export default function Rooms() {
             />
           </AddModal>
           <div className="flex justify-around mt-5">
-            <Button type="submit" disabled={disableSave()}>
+            <Button type={ButtonType.SUBMIT} disabled={disableSave()}>
               Save room
             </Button>
             <Button
               disabled={!can_delete()}
-              type="button"
+              type={ButtonType.BUTTON}
               onClick={handleDelete}
             >
               Delete room

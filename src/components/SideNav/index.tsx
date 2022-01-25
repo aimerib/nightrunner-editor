@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import Logo from './Logo';
-
-const SideNav = ({
-  data,
-  className,
-}: {
-  data: { name: string; component: React.ReactNode }[];
+interface ISideNav {
   className?: string;
-}) => {
+  data: { name: string; component: React.ReactNode }[];
+  currPage?: number | null;
+  setCurrPage?: (page: number) => void | undefined;
+}
+
+const SideNav = ({ data, className, currPage, setCurrPage }: ISideNav) => {
   const render_side_nav = () => {
     return (
       <div
@@ -20,7 +20,7 @@ const SideNav = ({
           return (
             <button
               className={`${
-                currentPage === index
+                currentPage() === index
                   ? 'bg-nr-green text-black '
                   : ' hover:bg-nr-600 text-green-nr'
               }
@@ -28,7 +28,7 @@ const SideNav = ({
                `}
               type="button"
               key={page.name}
-              onClick={() => setCurrentPage(index)}
+              onClick={() => handleSetCurrentPage(index)}
             >
               {page.name}
             </button>
@@ -37,12 +37,25 @@ const SideNav = ({
       </div>
     );
   };
-  const [currentPage, setCurrentPage] = useState(0);
+  const [localCurrentPage, setLocalCurrentPage] = useState(currPage ?? 0);
+  const handleSetCurrentPage = (index: number) => {
+    if (setCurrPage) {
+      setCurrPage(index);
+    } else {
+      setLocalCurrentPage(index);
+    }
+  };
+  const currentPage = () => {
+    if (currPage) {
+      return currPage;
+    }
+    return localCurrentPage;
+  };
   return (
     <div style={{ display: 'flex' }}>
       {render_side_nav()}
       <div className="w-full p-8 full-height bg-nr-800">
-        {data[currentPage].component}
+        {data[currentPage()].component}
       </div>
     </div>
   );

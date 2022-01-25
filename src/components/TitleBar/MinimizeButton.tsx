@@ -1,11 +1,11 @@
 import React from 'react';
 import { appWindow } from '@tauri-apps/api/window';
-import './TitleBar.css';
+import title_bar from './title_bar.module.css';
 
 export const MinimizeButton = () => {
   return (
     <div
-      className="titlebar_button"
+      className={title_bar.titlebar_button}
       onClick={() => appWindow.minimize()}
       id="titlebar-minimize"
     >

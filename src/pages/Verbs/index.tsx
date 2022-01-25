@@ -1,8 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, RadioButton, ListContainer, Input } from '../../components';
-import Modal from '../../components/Modal';
+import {
+  Button,
+  RadioButton,
+  ListContainer,
+  Input,
+  Modal,
+} from '../../components';
 import { store } from '../../store';
-import { VERB_TYPE } from '../../types';
+import { VERB_TYPE, ActionTypes, ButtonType } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Verbs(): JSX.Element {
@@ -19,39 +24,34 @@ export default function Verbs(): JSX.Element {
   const [aliases, set_aliases] = useState<string[]>([]);
 
   // init verbs state
-  const [verbs_state, dispatch_item] = useContext(store).verbs;
-
+  const [verbs_state, dispatch_item] = useContext(store).gameState.verbs;
+  const verbs: VERB_TYPE[] = Object.keys(verbs_state).map((key): VERB_TYPE => {
+    return verbs_state[key];
+  });
   // holds the new verb object
   const new_verb: VERB_TYPE = { name, aliases };
 
   useEffect(() => {
-    const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
-      (key): VERB_TYPE => {
-        return verbs_state[key];
-      }
-    );
     if (verbs.length > 0) {
       set_id(verbs[verbs.length - 1].id + 1);
     }
   }, [verbs_state]);
 
   const handleChange = (): void => {
-    const verbs: VERB_TYPE[] = Object.keys(verbs_state).map(
-      (key): VERB_TYPE => {
-        return verbs_state[key];
-      }
-    );
-    if (verbs.find((v) => v.name === name) && !verb.id) {
+    if (
+      verbs.find((v) => v.name === name || v.aliases.includes(name)) &&
+      !verb.id
+    ) {
       set_show_modal(true);
     } else if (verb.id) {
       if (name) {
         dispatch_item({
-          type: 'UPDATE_VERB',
+          type: ActionTypes.UPDATE,
           payload: { ...verb, name, aliases },
         });
       }
     } else if (new_verb.name && !verbs.find((v) => v.name === name)) {
-      dispatch_item({ type: 'ADD_VERB', payload: { new_verb, id } });
+      dispatch_item({ type: ActionTypes.ADD, payload: { new_verb, id } });
     }
     set_verb({} as VERB_TYPE);
     set_selectedRadio('');
@@ -66,7 +66,7 @@ export default function Verbs(): JSX.Element {
     set_alias_name('');
     set_name('');
     set_selectedRadio('');
-    dispatch_item({ type: 'REMOVE_VERB', payload: verb.id });
+    dispatch_item({ type: ActionTypes.REMOVE, payload: verb.id });
     setInputFocus();
   };
 
@@ -131,8 +131,16 @@ export default function Verbs(): JSX.Element {
 
   const handle_add_alias = (): void => {
     if (alias_name) {
-      set_aliases([...aliases, alias_name.toLowerCase()]);
-      set_alias_name('');
+      if (
+        verbs.find(
+          (v) => v.aliases.includes(alias_name) || v.name === alias_name
+        )
+      ) {
+        set_show_modal(true);
+      } else {
+        set_aliases([...aliases, alias_name.toLowerCase()]);
+        set_alias_name('');
+      }
     }
   };
   const handle_delete_alias = (): void => {
@@ -183,21 +191,21 @@ export default function Verbs(): JSX.Element {
               <Button
                 disabled={!alias_name}
                 className="text-base justify-self-center"
-                type="button"
+                type={ButtonType.BUTTON}
                 onClick={handle_add_alias}
               >
                 Add alias
               </Button>
             </div>
             <div className="flex flex-col justify-start gap-5">
-              <ListContainer scrollable small label="Existing verb aliases:">
+              <ListContainer scrollable small label="Existing aliases:">
                 {renderAliases()}
               </ListContainer>
 
               <Button
                 disabled={!selectedAliasRadio}
                 className="text-base justify-self-center"
-                type="button"
+                type={ButtonType.BUTTON}
                 onClick={handle_delete_alias}
               >
                 Delete alias
@@ -205,11 +213,11 @@ export default function Verbs(): JSX.Element {
             </div>
           </div>
           <div className="flex justify-around mt-5">
-            <Button type="submit" disabled={disabled_save()}>
+            <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
               Save item
             </Button>
             <Button
-              type="button"
+              type={ButtonType.BUTTON}
               disabled={disabled_delete()}
               onClick={handleDelete}
             >

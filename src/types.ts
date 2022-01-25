@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 //#region Exit
 export type Exits = {
   [id: number]: EXIT_TYPE;
@@ -32,20 +34,23 @@ export type EVENT_STATE_TYPE = {
 
 export type EVENT_ACTION_TYPE =
   | {
-    type: 'ADD_EVENT';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_event: EVENT_TYPE;
     };
   }
   | {
-    type: 'UPDATE_EVENT';
+    type: ActionTypes.UPDATE;
     payload: EVENT_TYPE;
   }
   | {
-    type: 'REMOVE_EVENT';
+    type: ActionTypes.REMOVE;
     payload: number;
-  };
+  }
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: EVENT_STATE_TYPE};
+
 //#endregion
 
 //#region Verb
@@ -60,20 +65,23 @@ export type VERB_STATE_TYPE = {
 
 export type VERB_ACTION_TYPE =
   | {
-    type: 'ADD_VERB';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_verb: VERB_TYPE;
     };
   }
   | {
-    type: 'UPDATE_VERB';
+    type: ActionTypes.UPDATE;
     payload: VERB_TYPE;
   }
   | {
-    type: 'REMOVE_VERB';
+    type: ActionTypes.REMOVE;
     payload: number;
-  };
+  }
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: VERB_STATE_TYPE};
+
 //#endregion
 
 //#region Room
@@ -93,20 +101,22 @@ export type ROOMS_STATE_TYPE = {
 
 export type ROOM_ACTION_TYPE =
   | {
-    type: 'ADD_ROOM';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_room: ROOM_TYPE;
     };
   }
   | {
-    type: 'UPDATE_ROOM';
+    type: ActionTypes.UPDATE;
     payload: ROOM_TYPE;
   }
   | {
-    type: 'REMOVE_ROOM';
+    type: ActionTypes.REMOVE;
     payload: number;
-  };
+  }
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: ROOMS_STATE_TYPE};
 //#endregion
 
 //#region Narrative
@@ -122,20 +132,23 @@ export type NARRATIVES_STATE_TYPE = {
 
 export type NARRATIVE_ACTION_TYPE =
   | {
-    type: 'ADD_NARRATIVE';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_narrative: NARRATIVE_TYPE;
     };
   }
   | {
-    type: 'UPDATE_NARRATIVE';
+    type: ActionTypes.UPDATE;
     payload: NARRATIVE_TYPE;
   }
   | {
-    type: 'REMOVE_NARRATIVE';
+    type: ActionTypes.REMOVE;
     payload: number;
-  };
+  }
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: NARRATIVES_STATE_TYPE};
+
 //#endregion
 
 //#region Subject
@@ -151,39 +164,45 @@ export type SUBJECTS_STATE_TYPE = {
 
 export type SUBJECT_ACTION_TYPE =
   | {
-    type: 'ADD_SUBJECT';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_subject: SUBJECT_TYPE;
     };
   }
   | {
-    type: 'UPDATE_SUBJECT';
+    type: ActionTypes.UPDATE;
     payload: SUBJECT_TYPE;
   }
   | {
-    type: 'REMOVE_SUBJECT';
+    type: ActionTypes.REMOVE;
     payload: number;
-  };
+  }
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: SUBJECTS_STATE_TYPE};
+
 //#endregion
 
 //#region Item
 export type ITEM_ACTION_TYPE =
   | {
-    type: 'ADD_ITEM';
+    type: ActionTypes.ADD;
     payload: {
       id: number;
       new_item: ITEM_TYPE;
     };
   }
   | {
-    type: 'UPDATE_ITEM';
+    type: ActionTypes.UPDATE;
     payload: ITEM_TYPE;
   }
   | {
-    type: 'REMOVE_ITEM';
+    type: ActionTypes.REMOVE;
     payload: number;
-  };
+  }
+  | { type: ActionTypes.RESET}
+  | { type: ActionTypes.LOAD; payload: ITEMS_STATE_TYPE};
+
 
 export type ITEM_TYPE = {
   id?: number,
@@ -192,4 +211,54 @@ export type ITEM_TYPE = {
 export type ITEMS_STATE_TYPE = {
   [key: number]: ITEM_TYPE;
 } | Record<string, never>;
+//#endregion
+
+//#region ActionTypes
+export enum ActionTypes {
+  ADD = 'ADD',
+  REMOVE = 'REMOVE',
+  UPDATE = 'UPDATE',
+  RESET = 'RESET',
+  LOAD = 'LOAD',
+}
+//#endregion
+
+//#region GameState
+export type GAME_STATE_TYPE = {
+  folder: [string, Dispatch<SetStateAction<string>>];
+  name: [string, Dispatch<SetStateAction<string>>];
+  intro: [string, Dispatch<SetStateAction<string>>];
+  verbs: [VERB_STATE_TYPE, Dispatch<VERB_ACTION_TYPE>];
+  items: [ITEMS_STATE_TYPE, Dispatch<ITEM_ACTION_TYPE>];
+  rooms: [ROOMS_STATE_TYPE, Dispatch<ROOM_ACTION_TYPE>];
+  events: [EVENT_STATE_TYPE, Dispatch<EVENT_ACTION_TYPE>];
+  narratives: [NARRATIVES_STATE_TYPE, Dispatch<NARRATIVE_ACTION_TYPE>];
+  subjects: [SUBJECTS_STATE_TYPE, Dispatch<SUBJECT_ACTION_TYPE>];
+};
+//#endregion
+
+export type GAME_SETTINGS_TYPE = {
+  intro: string;
+  verbs: VERB_STATE_TYPE;
+  items: ITEMS_STATE_TYPE;
+  rooms: ROOMS_STATE_TYPE;
+  events: EVENT_STATE_TYPE;
+  narratives: NARRATIVES_STATE_TYPE;
+  subjects: SUBJECTS_STATE_TYPE;
+};
+//#region Night Runner Context
+export type NRContext = {
+  gameState: GAME_STATE_TYPE;
+  new_game: () => void;
+  load_game: (game_settings: GAME_SETTINGS_TYPE) => void;
+  save_settings: (game_name: string, game_intro: string) => void;
+  pages: [number, Dispatch<SetStateAction<number>>];
+}
+//#endregion
+
+//#region ButtonType
+export enum ButtonType {
+  SUBMIT = 'submit',
+  BUTTON = 'button',
+}
 //#endregion

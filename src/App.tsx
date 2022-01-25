@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { TitleBar, SideNav } from './components';
 import {
   Rooms,
@@ -9,22 +9,27 @@ import {
   Settings,
   Verbs,
 } from './pages';
-
+import { store } from './store';
 const data = [
+  { name: 'Settings', component: <Settings /> },
   { name: 'Verbs', component: <Verbs /> },
   { name: 'Items', component: <Items /> },
   { name: 'Subjects', component: <Subjects /> },
   { name: 'Narratives', component: <Narratives /> },
   { name: 'Rooms', component: <Rooms /> },
   { name: 'Events', component: <Events /> },
-  { name: 'Settings', component: <Settings /> },
 ];
 
 function App() {
+  const [currentPage, setCurrentPage] = useContext(store).pages;
   return (
     <>
       <TitleBar title="Nightrunner Editor" />
-      <SideNav data={data} />
+      <SideNav
+        data={data}
+        currPage={currentPage}
+        setCurrPage={setCurrentPage}
+      />
     </>
   );
 }

@@ -1,11 +1,11 @@
-import { VERB_ACTION_TYPE } from '../../types';
+import { VERB_ACTION_TYPE, ActionTypes } from '../../types';
 import { initial_verbs_state } from '../initialStates';
 const verb_reducer = (
   old_state: typeof initial_verbs_state,
   action: VERB_ACTION_TYPE
 ) => {
   switch (action.type) {
-    case 'ADD_VERB': {
+    case ActionTypes.ADD: {
       const new_verb = {};
       new_verb[action.payload.id] = {
         id: action.payload.id,
@@ -13,16 +13,22 @@ const verb_reducer = (
       };
       return { ...old_state, ...new_verb };
     }
-    case 'UPDATE_VERB': {
+    case ActionTypes.UPDATE: {
       const updated_verb = action.payload;
       const verbs = { ...old_state };
       verbs[updated_verb.id] = { ...updated_verb };
       return { ...old_state, ...verbs };
     }
-    case 'REMOVE_VERB': {
+    case ActionTypes.REMOVE: {
       const verbs = { ...old_state };
       delete verbs[action.payload];
       return { ...verbs };
+    }
+    case ActionTypes.RESET: {
+      return initial_verbs_state;
+    }
+    case ActionTypes.LOAD: {
+      return { ...action.payload };
     }
     default:
       return old_state;

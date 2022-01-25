@@ -1,7 +1,6 @@
+import modal from './warningmodal.module.css';
 import React from 'react';
-import modal from './addmodal.module.css';
 import Button from '../Button';
-import { ButtonType } from '../../types';
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
@@ -26,18 +25,18 @@ const CloseButton = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
-export default function AddModal({
+export default function WarningModal({
   show,
   children,
-  handle_save,
   title,
   handle_close,
+  callback,
 }: {
   show: boolean;
   children: React.ReactNode;
-  handle_save: () => void;
   title: string;
   handle_close: () => void;
+  callback: () => void;
 }): JSX.Element {
   if (show === false) {
     return null;
@@ -45,19 +44,28 @@ export default function AddModal({
   return (
     <div className={modal.wrapper}>
       <div className={modal.title_bar}>
-        <div className="fixed top-3 justify-self-center"> {title}</div>
+        <div className="fixed transform -translate-x-1/2 top-3 left-1/2">
+          {title}
+        </div>
         <div className="">
           <CloseButton onClose={handle_close} />
         </div>
       </div>
-      <div className="flex flex-col px-5 pt-10 ">{children}</div>
-      <Button
-        className="self-end mb-5 justify-self-center"
-        type={ButtonType.BUTTON}
-        onClick={handle_save}
-      >
-        Add
-      </Button>
+      <div className={modal.modal_content}>{children}</div>
+      <div className="flex self-end justify-around mb-5 justify-self-center">
+        <Button
+          className=""
+          onClick={() => {
+            callback();
+            handle_close();
+          }}
+        >
+          Continue
+        </Button>
+        <Button className="" onClick={handle_close}>
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 }

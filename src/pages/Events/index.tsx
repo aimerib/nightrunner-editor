@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useContext, useEffect } from 'react';
 import {
@@ -9,7 +8,7 @@ import {
   SelectList,
   Checkbox,
 } from '../../components';
-import { EVENT_TYPE } from '../../types';
+import { EVENT_TYPE, ActionTypes, ButtonType } from '../../types';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
 
@@ -33,11 +32,11 @@ export default function Events() {
   const [event, set_event] = useState({} as EVENT_TYPE);
 
   // init events state
-  const [events_state, dispatch_event] = useContext(store).events;
-  const available_items = useContext(store).items[0];
-  const available_narratives = useContext(store).narratives[0];
-  const [available_rooms, dispatch_rooms] = useContext(store).rooms;
-  const available_subjects = useContext(store).subjects[0];
+  const [events_state, dispatch_event] = useContext(store).gameState.events;
+  const available_items = useContext(store).gameState.items[0];
+  const available_narratives = useContext(store).gameState.narratives[0];
+  const [available_rooms, dispatch_rooms] = useContext(store).gameState.rooms;
+  const available_subjects = useContext(store).gameState.subjects[0];
 
   // holds the new event object
   const new_event: EVENT_TYPE = {
@@ -89,7 +88,7 @@ export default function Events() {
     if (event.id) {
       if (name && description && narrative && required_verb && location) {
         dispatch_event({
-          type: 'UPDATE_EVENT',
+          type: ActionTypes.UPDATE,
           payload: {
             ...event,
             name,
@@ -118,9 +117,9 @@ export default function Events() {
     ) {
       const room = available_rooms[location];
       const id = previousId + 1;
-      dispatch_event({ type: 'ADD_EVENT', payload: { new_event, id } });
+      dispatch_event({ type: ActionTypes.ADD, payload: { new_event, id } });
       dispatch_rooms({
-        type: 'UPDATE_ROOM',
+        type: ActionTypes.UPDATE,
         payload: { ...room, room_events: [...room.room_events, id] },
       });
       set_id(id);
@@ -129,7 +128,7 @@ export default function Events() {
   };
 
   const handleDelete = () => {
-    dispatch_event({ type: 'REMOVE_EVENT', payload: event.id });
+    dispatch_event({ type: ActionTypes.REMOVE, payload: event.id });
     resetInputs();
   };
 
@@ -358,11 +357,11 @@ export default function Events() {
               </div>
             </div>
             <div className="flex self-end justify-around mt-5">
-              <Button type="submit" disabled={disabled_save()}>
+              <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
                 Save event
               </Button>
               <Button
-                type="button"
+                type={ButtonType.BUTTON}
                 disabled={disabled_delete()}
                 onClick={handleDelete}
               >

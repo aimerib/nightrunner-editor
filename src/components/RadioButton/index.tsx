@@ -1,4 +1,4 @@
-import './RadioButton.css';
+import radio_button from './radio_button.module.css';
 import React from 'react';
 
 export default function RadioButton({
@@ -34,7 +34,7 @@ export default function RadioButton({
         id={id}
         name={name}
         value={value}
-        className="hide_radio"
+        className={radio_button.hide_radio}
       />
       <label className={'flex-1 truncate'} htmlFor={id}>
         {children}

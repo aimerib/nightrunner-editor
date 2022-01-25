@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Button, RadioButton, ListContainer, Input } from '../../components';
 import { store } from '../../store';
-import { NARRATIVE_TYPE } from '../../types';
+import { NARRATIVE_TYPE, ActionTypes, ButtonType } from '../../types';
 import { useFocus } from '../../utils';
 
 export default function Narratives() {
@@ -14,15 +14,16 @@ export default function Narratives() {
   const [narrative, set_narrative] = useState({} as NARRATIVE_TYPE);
 
   // init narratives state
-  const [narratives_state, dispatch_narrative] = useContext(store).narratives;
+  const [narratives_state, dispatch_narrative] =
+    useContext(store).gameState.narratives;
 
   // holds the new narrative object
   const new_narrative = { text, description };
 
   const narratives_array = narratives_state
     ? Object.keys(narratives_state).map((key) => {
-      return narratives_state[key];
-    })
+        return narratives_state[key];
+      })
     : [];
 
   useEffect(() => {
@@ -35,15 +36,15 @@ export default function Narratives() {
     if (narrative.id) {
       if (text && description) {
         dispatch_narrative({
-          type: 'UPDATE_NARRATIVE',
-          payload: { ...narrative, text, description }
+          type: ActionTypes.UPDATE,
+          payload: { ...narrative, text, description },
         });
       }
     } else if (new_narrative.text && new_narrative.description) {
       const new_id = id + 1;
       dispatch_narrative({
-        type: 'ADD_NARRATIVE',
-        payload: { new_narrative, id }
+        type: ActionTypes.ADD,
+        payload: { new_narrative, id },
       });
       set_id(new_id);
     }
@@ -58,7 +59,7 @@ export default function Narratives() {
     set_text('');
     set_description('');
     set_narrative({} as NARRATIVE_TYPE);
-    dispatch_narrative({ type: 'REMOVE_NARRATIVE', payload: narrative.id });
+    dispatch_narrative({ type: ActionTypes.REMOVE, payload: narrative.id });
     set_selectedRadio('');
   };
 
@@ -140,11 +141,11 @@ export default function Narratives() {
         >
           {renderInputs()}
           <div className="flex justify-around mt-5">
-            <Button type="submit" disabled={disabled_save()}>
+            <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
               Save narrative
             </Button>
             <Button
-              type="button"
+              type={ButtonType.BUTTON}
               disabled={disabled_delete()}
               onClick={handleDelete}
             >

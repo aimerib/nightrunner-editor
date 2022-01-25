@@ -9,6 +9,8 @@ import SelectList from './SelectList';
 import Checkbox from './Checkbox';
 import TitleBar from './TitleBar';
 import SideNav from './SideNav';
+import WarningModal from './WarningModal';
+import Modal from './Modal';
 export {
   Button,
   TabGroup,
@@ -21,4 +23,6 @@ export {
   Checkbox,
   TitleBar,
   SideNav,
+  WarningModal,
+  Modal
 };

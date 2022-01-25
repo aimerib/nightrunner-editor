@@ -1,5 +1,7 @@
 import React from 'react';
-import './Button.css';
+import { ButtonType } from '../../types';
+import button from './button.module.css';
+
 export default function Button({
   children,
   onClick,
@@ -10,7 +12,7 @@ export default function Button({
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
-  type?: string;
+  type?: ButtonType;
   disabled?: boolean;
 }) {
   const run_callback_with_delay = (e) => {
@@ -21,10 +23,10 @@ export default function Button({
     return (
       <button
         disabled={disabled}
-        className={`${disabled ? 'disabled_button' : 'button'} ${className} ${
-          disabled ? '' : 'hover:text-glow-sm'
-        } text-2.5xl`}
-        type={type === 'submit' ? 'submit' : 'button'}
+        className={`${
+          disabled ? button.disabled_button : button.button
+        } ${className} text-2.5xl`}
+        type={type === ButtonType.SUBMIT ? 'submit' : 'button'}
         onClick={run_callback_with_delay}
       >
         {children}
@@ -34,10 +36,10 @@ export default function Button({
   return (
     <button
       disabled={disabled}
-      className={`${disabled ? 'disabled_button' : 'button'} ${className} ${
-        disabled ? '' : 'hover:text-glow-sm'
-      } text-2.5xl`}
-      type={type === 'submit' ? 'submit' : 'button'}
+      className={`${
+        disabled ? button.disabled_button : button.button
+      } ${className} text-2.5xl`}
+      type={type === ButtonType.SUBMIT ? 'submit' : 'button'}
     >
       {children}
     </button>

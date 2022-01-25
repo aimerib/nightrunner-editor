@@ -6,6 +6,7 @@ import { notification } from '@tauri-apps/api';
 import { store } from '../../store';
 import { Modal, WarningModal } from '../../components';
 import { GAME_SETTINGS_TYPE } from '../../types';
+import title_bar from './title_bar.module.css';
 
 interface Props {
   active: boolean;
@@ -90,10 +91,12 @@ export const FileMenu = ({ active, innerRef, setActive }: Props) => {
         ref={innerRef}
         className={`${
           active ? 'visible' : 'hidden'
-        } z-50 absolute bg-gray-900 text-green-nr w-1/12 menu_area menu_background`}
+        } z-50 absolute bg-gray-900 text-green-nr w-1/12 ${
+          title_bar.menu_area
+        } ${title_bar.menu_background}`}
       >
         <a
-          className="menu_item"
+          className={title_bar.menu_item}
           onClick={() => {
             setActive(false);
             set_show_warning(true);
@@ -101,11 +104,11 @@ export const FileMenu = ({ active, innerRef, setActive }: Props) => {
         >
           New Game
         </a>
-        <a className="menu_item" onClick={handle_save_game}>
+        <a className={title_bar.menu_item} onClick={handle_save_game}>
           Save Game
         </a>
         <a
-          className="menu_item"
+          className={title_bar.menu_item}
           onClick={() => {
             setActive(false);
             handle_load_game();

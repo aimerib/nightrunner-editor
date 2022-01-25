@@ -23,12 +23,18 @@ const ListContainer = ({
 }: ListContainerProps): JSX.Element => {
   const listContainerRef = useRef<HTMLDivElement>(null);
   const [height, set_height] = useState(null);
+  const [children_count, set_children_count] = useState(0);
 
   useEffect(() => {
     if (listContainerRef.current) {
       set_height(listContainerRef.current.clientHeight);
     }
   }, [listContainerRef]);
+  useEffect(() => {
+    if (children && Array.isArray(children)) {
+      set_children_count(children.length);
+    }
+  }, [children]);
   const decide_height = (): string => {
     if (small) {
       return `${height}px`;
@@ -37,17 +43,20 @@ const ListContainer = ({
     }
     return 'auto';
   };
+
   return (
     <div
       style={{ gridTemplateRows: 'min-content' }}
-      className={`grid ${className ? ` ${className}` : ''}`}
+      className={`${children_count > 0 ? '' : 'grid'} ${
+        className ? ` ${className}` : ''
+      }`}
     >
       <p className="h-auto pb-2 text-xl font-bold">{label}</p>
       <div
         ref={listContainerRef}
         style={{ height: decide_height() }}
         className={`bg-nr-900 ring-inset ring-gray-900 ring-1 nr-input ${
-          scrollable ? list_container.listscrollable : ''
+          scrollable ? list_container.scrollable : ''
         } ${small ? list_container.small : ''}`}
       >
         {children ? children : <span>No exits yet</span>}

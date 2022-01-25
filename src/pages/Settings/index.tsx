@@ -5,7 +5,7 @@ import { ButtonType } from '../../types';
 import { invoke } from '@tauri-apps/api/tauri';
 import { open } from '@tauri-apps/api/dialog';
 
-export default function Settings() {
+export default function Settings(): JSX.Element {
   const { gameState } = useContext(store);
   const [game_folder, set_game_folder] = gameState.folder;
   const game_name = gameState.name[0];

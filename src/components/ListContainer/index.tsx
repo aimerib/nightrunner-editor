@@ -40,13 +40,13 @@ const ListContainer = ({
   return (
     <div
       style={{ gridTemplateRows: 'min-content' }}
-      className={`grid${className ? ` ${className}` : ''}`}
+      className={`grid ${className ? ` ${className}` : ''}`}
     >
       <p className="h-auto pb-2 text-xl font-bold">{label}</p>
       <div
         ref={listContainerRef}
         style={{ height: decide_height() }}
-        className={`bg-nr-900 ring-inset ring-gray-900 ring-1 nr-input${
+        className={`bg-nr-900 ring-inset ring-gray-900 ring-1 nr-input ${
           scrollable ? list_container.listscrollable : ''
         } ${small ? list_container.small : ''}`}
       >

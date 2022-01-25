@@ -204,7 +204,7 @@ export default function Verbs(): JSX.Element {
 
               <Button
                 disabled={!selectedAliasRadio}
-                className="text-base justify-self-center"
+                className="self-center text-base"
                 type={ButtonType.BUTTON}
                 onClick={handle_delete_alias}
               >
@@ -214,14 +214,14 @@ export default function Verbs(): JSX.Element {
           </div>
           <div className="flex justify-around mt-5">
             <Button type={ButtonType.SUBMIT} disabled={disabled_save()}>
-              Save item
+              Save Verb
             </Button>
             <Button
               type={ButtonType.BUTTON}
               disabled={disabled_delete()}
               onClick={handleDelete}
             >
-              Delete item
+              Delete Verb
             </Button>
           </div>
         </form>

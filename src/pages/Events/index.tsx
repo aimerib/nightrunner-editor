@@ -11,6 +11,7 @@ import {
 import { EVENT_TYPE, ActionTypes, ButtonType } from '../../types';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
+import style from './events.module.css';
 
 export default function Events() {
   // init states
@@ -249,8 +250,8 @@ export default function Events() {
               value={description}
               onChange={(e) => set_description(e.target.value)}
             />
-            <div className="row">
-              <div className="col">
+            <div className={style.row}>
+              <div className={style.col}>
                 <SelectList
                   label="Event location"
                   options={roomsOptions}
@@ -258,7 +259,7 @@ export default function Events() {
                   onChange={(e) => set_location(available_rooms[e.value].id)}
                 />
               </div>
-              <div className="col">
+              <div className={style.col}>
                 <SelectList
                   label="Required verb"
                   options={verbsOptions}
@@ -267,8 +268,8 @@ export default function Events() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col">
+            <div className={style.row}>
+              <div className={style.col}>
                 <SelectList
                   label="Required item"
                   options={itemsOptions}
@@ -278,7 +279,7 @@ export default function Events() {
                   }}
                 />
               </div>
-              <div className="col">
+              <div className={style.col}>
                 <SelectList
                   label="Required subject"
                   options={subjectsOptions}
@@ -289,8 +290,8 @@ export default function Events() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col">
+            <div className={style.row}>
+              <div className={style.col}>
                 <SelectList
                   label="Narrative"
                   options={narrativesOptions}
@@ -300,7 +301,7 @@ export default function Events() {
                   }}
                 />
               </div>
-              <div className="col">
+              <div className={style.col}>
                 <SelectList
                   label="Destination of event"
                   options={roomsOptions}
@@ -309,8 +310,8 @@ export default function Events() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col">
+            <div className={style.row}>
+              <div className={style.col}>
                 <SelectList
                   label="Add item"
                   options={itemsOptions}
@@ -318,7 +319,7 @@ export default function Events() {
                   onChange={(e) => set_add_item(available_items[e.value].id)}
                 />
               </div>
-              <div className="col">
+              <div className={style.col}>
                 <SelectList
                   label="Remove item"
                   options={itemsOptions}
@@ -327,8 +328,8 @@ export default function Events() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col">
+            <div className={style.row}>
+              <div className={style.col}>
                 <SelectList
                   label="Required events"
                   isMulti

@@ -30,8 +30,8 @@ export default function TitleBar({ title }: { title: string }) {
 
   return (
     <div className={title_bar.titlebar}>
-      <div data-tauri-drag-region className="titlebar-top">
-        <div data-tauri-drag-region className="title">
+      <div data-tauri-drag-region className={title_bar.titlebar_top}>
+        <div data-tauri-drag-region className={title_bar.title}>
           <p data-tauri-drag-region className="cursor-default">
             {title}
           </p>

@@ -6,7 +6,7 @@
   border-top: 1px rgba(55, 55, 55, 0.6) solid;
   user-select: none;
 }
-.titlebar-top {
+.titlebar_top {
   display: grid;
   grid-auto-flow: column;
   justify-content: end;

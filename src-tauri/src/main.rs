@@ -300,7 +300,6 @@ fn get_rooms_from_state(
 ) -> (String, BTreeMap<i32, Room>) {
   let (json_key, json_value) = game_state.get_key_value("rooms").unwrap();
   let value: Map<String, serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
-  dbg!(&value);
   let rooms = value
     .iter()
     .map(|(k, v)| {

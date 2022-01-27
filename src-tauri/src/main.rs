@@ -60,8 +60,8 @@ pub struct Narrative {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct Verb {
   pub id: u16,
-  pub name: String,
-  pub aliases: Vec<String>,
+  // pub name: String,
+  pub names: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
@@ -141,11 +141,11 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
   #[derive(Debug)]
   enum GameData<'a> {
     Rooms(&'a (String, BTreeMap<i32, Room>)),
-    Subjects(&'a (String, BTreeMap<i32, Subject>)),
+    Subjects(&'a (String, Vec<Subject>)),
     Events(&'a (String, BTreeMap<i32, Event>)),
-    Items(&'a (String, BTreeMap<i32, Item>)),
-    Narratives(&'a (String, BTreeMap<i32, Narrative>)),
-    Verbs(&'a (String, BTreeMap<i32, Verb>)),
+    Items(&'a (String, Vec<Item>)),
+    Narratives(&'a (String, Vec<Narrative>)),
+    Verbs(&'a (String, Vec<Verb>)),
   }
 
   if path.is_empty() {
@@ -166,42 +166,42 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
       match state_item {
         GameData::Rooms((key, rooms)) => {
           fs::write(
-            format!("{}/{}.yaml", &game_path, key),
+            format!("{}/{}.yml", &game_path, key),
             serde_yaml::to_string(&rooms).unwrap(),
           )
           .expect("Unable to write files to system");
         }
         GameData::Events((key, events)) => {
           fs::write(
-            format!("{}/{}.yaml", &game_path, key),
+            format!("{}/{}.yml", &game_path, key),
             serde_yaml::to_string(&events).unwrap(),
           )
           .expect("Unable to write files to system");
         }
         GameData::Items((key, items)) => {
           fs::write(
-            format!("{}/{}.yaml", &game_path, key),
+            format!("{}/{}.yml", &game_path, key),
             serde_yaml::to_string(&items).unwrap(),
           )
           .expect("Unable to write files to system");
         }
         GameData::Subjects((key, subjects)) => {
           fs::write(
-            format!("{}/{}.yaml", &game_path, key),
+            format!("{}/{}.yml", &game_path, key),
             serde_yaml::to_string(&subjects).unwrap(),
           )
           .expect("Unable to write files to system");
         }
         GameData::Narratives((key, narratives)) => {
           fs::write(
-            format!("{}/{}.yaml", &game_path, key),
+            format!("{}/{}.yml", &game_path, key),
             serde_yaml::to_string(&narratives).unwrap(),
           )
           .expect("Unable to write files to system");
         }
         GameData::Verbs((key, verbs)) => {
           fs::write(
-            format!("{}/{}.yaml", &game_path, key),
+            format!("{}/{}.yml", &game_path, key),
             serde_yaml::to_string(&verbs).unwrap(),
           )
           .expect("Unable to write files to system");
@@ -209,7 +209,7 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
       }
     }
     fs::write(
-      format!("{}/intro.yaml", &game_path),
+      format!("{}/intro.yml", &game_path),
       serde_yaml::to_string(&intro).unwrap(),
     )
     .expect("Unable to write files to system");
@@ -240,18 +240,16 @@ fn load_game(game_folder: String) -> Result<BTreeMap<String, Value>, String> {
       })
       .collect::<HashMap<String, String>>();
     let intro: String = serde_yaml::from_str(&game_files_raw.get("intro").unwrap()).unwrap();
-    let subjects: BTreeMap<i32, Subject> =
+    let subjects: Vec<Subject> =
       serde_yaml::from_str(&game_files_raw.get("subjects").unwrap()).unwrap();
     let events: BTreeMap<i32, Event> =
       serde_yaml::from_str(&game_files_raw.get("events").unwrap()).unwrap();
-    let items: BTreeMap<i32, Item> =
-      serde_yaml::from_str(&game_files_raw.get("items").unwrap()).unwrap();
+    let items: Vec<Item> = serde_yaml::from_str(&game_files_raw.get("items").unwrap()).unwrap();
     let rooms: BTreeMap<i32, Room> =
       serde_yaml::from_str(&game_files_raw.get("rooms").unwrap()).unwrap();
-    let narratives: BTreeMap<i32, Narrative> =
+    let narratives: Vec<Narrative> =
       serde_yaml::from_str(&game_files_raw.get("narratives").unwrap()).unwrap();
-    let verbs: BTreeMap<i32, Verb> =
-      serde_yaml::from_str(&game_files_raw.get("verbs").unwrap()).unwrap();
+    let verbs: Vec<Verb> = serde_yaml::from_str(&game_files_raw.get("verbs").unwrap()).unwrap();
 
     let mut game_state: BTreeMap<String, Value> = BTreeMap::new();
     game_state.insert("intro".to_string(), serde_json::to_value(intro).unwrap());
@@ -275,13 +273,13 @@ fn load_game(game_folder: String) -> Result<BTreeMap<String, Value>, String> {
 
 fn is_game_folder(game_files: &Vec<(String, String)>) -> bool {
   let required_files = [
-    "intro.yaml",
-    "subjects.yaml",
-    "events.yaml",
-    "items.yaml",
-    "rooms.yaml",
-    "narratives.yaml",
-    "verbs.yaml",
+    "intro.yml",
+    "subjects.yml",
+    "events.yml",
+    "items.yml",
+    "rooms.yml",
+    "narratives.yml",
+    "verbs.yml",
   ];
   let file_names = game_files
     .iter()
@@ -297,6 +295,7 @@ fn get_rooms_from_state(
 ) -> (String, BTreeMap<i32, Room>) {
   let (json_key, json_value) = game_state.get_key_value("rooms").unwrap();
   let value: Map<String, serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
+  dbg!(&value);
   let rooms = value
     .iter()
     .map(|(k, v)| {
@@ -326,71 +325,47 @@ fn get_events_from_state(
   (json_key.clone(), events)
 }
 
-fn get_verbs_from_state(
-  game_state: &HashMap<String, serde_json::Value>,
-) -> (String, BTreeMap<i32, Verb>) {
+fn get_verbs_from_state(game_state: &HashMap<String, serde_json::Value>) -> (String, Vec<Verb>) {
   let (json_key, json_value) = game_state.get_key_value("verbs").unwrap();
-  let value: Map<String, serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
+  let value: Vec<serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
   let verbs = value
     .iter()
-    .map(|(k, v)| {
-      (
-        k.parse::<i32>().unwrap(),
-        serde_json::from_value::<Verb>(v.clone()).unwrap(),
-      )
-    })
-    .collect::<BTreeMap<i32, _>>();
+    .map(|v| serde_json::from_value::<Verb>(v.clone()).unwrap())
+    .collect::<Vec<Verb>>();
   (json_key.clone(), verbs)
 }
 
-fn get_items_from_state(
-  game_state: &HashMap<String, serde_json::Value>,
-) -> (String, BTreeMap<i32, Item>) {
+fn get_items_from_state(game_state: &HashMap<String, serde_json::Value>) -> (String, Vec<Item>) {
   let (json_key, json_value) = game_state.get_key_value("items").unwrap();
-  let value: Map<String, serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
+  let value: Vec<serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
   let items = value
     .iter()
-    .map(|(k, v)| {
-      (
-        k.parse::<i32>().unwrap(),
-        serde_json::from_value::<Item>(v.clone()).unwrap(),
-      )
-    })
-    .collect::<BTreeMap<i32, _>>();
+    .map(|v| serde_json::from_value::<Item>(v.clone()).unwrap())
+    .collect::<Vec<Item>>();
   (json_key.clone(), items)
 }
 
 fn get_subjects_from_state(
   game_state: &HashMap<String, serde_json::Value>,
-) -> (String, BTreeMap<i32, Subject>) {
+) -> (String, Vec<Subject>) {
   let (json_key, json_value) = game_state.get_key_value("subjects").unwrap();
-  let value: Map<String, serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
+  let value: Vec<serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
   let subjects = value
     .iter()
-    .map(|(k, v)| {
-      (
-        k.parse::<i32>().unwrap(),
-        serde_json::from_value::<Subject>(v.clone()).unwrap(),
-      )
-    })
-    .collect::<BTreeMap<i32, _>>();
+    .map(|v| serde_json::from_value::<Subject>(v.clone()).unwrap())
+    .collect::<Vec<Subject>>();
   (json_key.clone(), subjects)
 }
 
 fn get_narratives_from_state(
   game_state: &HashMap<String, serde_json::Value>,
-) -> (String, BTreeMap<i32, Narrative>) {
+) -> (String, Vec<Narrative>) {
   let (json_key, json_value) = game_state.get_key_value("narratives").unwrap();
-  let value: Map<String, serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
+  let value: Vec<serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
   let narratives = value
     .iter()
-    .map(|(k, v)| {
-      (
-        k.parse::<i32>().unwrap(),
-        serde_json::from_value::<Narrative>(v.clone()).unwrap(),
-      )
-    })
-    .collect::<BTreeMap<i32, _>>();
+    .map(|v| serde_json::from_value::<Narrative>(v.clone()).unwrap())
+    .collect::<Vec<Narrative>>();
   (json_key.clone(), narratives)
 }
 

@@ -1,4 +1,5 @@
 import React, { ChangeEventHandler, RefObject as Ref, FC } from 'react';
+import input from './input.module.css';
 
 type ComponentProps = {
   multiline?: boolean;
@@ -52,10 +53,11 @@ const Input: FC<InputProps | TextAreaProps> = ({
             width: '100%',
             height: '100%',
             resize: 'none',
+            fontFamily: 'monospace, monospace',
           }}
           disabled={disabled}
           name={name}
-          className="p-2 focus:outline-none bg-nr-900 nr-input focus:ring-green-nr focus:ring-2"
+          className={input.input_style}
           autoFocus={autoFocus}
           ref={innerRef}
           value={value}
@@ -65,7 +67,7 @@ const Input: FC<InputProps | TextAreaProps> = ({
         <input
           disabled={disabled}
           name={name}
-          className="p-2 focus:outline-none bg-nr-900 nr-input focus:ring-green-nr focus:ring-2"
+          className={input.input_style}
           autoFocus={autoFocus}
           ref={innerRef}
           type="text"

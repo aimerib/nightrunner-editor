@@ -21,11 +21,8 @@ export default function Subjects() {
   const new_subject: SUBJECT_TYPE = { name, description };
 
   useEffect(() => {
-    const subjects = Object.keys(subjects_state).map((key) => {
-      return subjects_state[key];
-    });
-    if (subjects.length > 0) {
-      set_id(subjects[subjects.length - 1].id + 1);
+    if (subjects_state.length > 0) {
+      set_id(subjects_state[subjects_state.length - 1].id + 1);
     }
   }, [subjects_state]);
 
@@ -56,22 +53,22 @@ export default function Subjects() {
   };
 
   const renderSubjects = (): JSX.Element[] => {
-    return Object.keys(subjects_state).map((key): JSX.Element => {
+    return subjects_state.map((s: SUBJECT_TYPE): JSX.Element => {
       return (
         <RadioButton
-          key={subjects_state[key].id}
-          id={subjects_state[key].name}
+          key={s.id}
+          id={s.name}
           name="subjects"
-          value={subjects_state[key].name}
+          value={s.name}
           onChange={() => {
-            set_subject(subjects_state[key]);
-            set_name(subjects_state[key].name);
-            set_description(subjects_state[key].description);
-            set_selectedRadio(subjects_state[key].name);
+            set_subject(s);
+            set_name(s.name);
+            set_description(s.description);
+            set_selectedRadio(s.name);
           }}
-          checked={selectedRadio === subjects_state[key].name}
+          checked={selectedRadio === s.name}
         >
-          {subjects_state[key].name} - {subjects_state[key].description}
+          {s.name} - {s.description}
         </RadioButton>
       );
     });

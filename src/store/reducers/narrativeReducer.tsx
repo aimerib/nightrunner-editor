@@ -1,4 +1,8 @@
-import { ActionTypes, NARRATIVE_ACTION_TYPE } from '../../types';
+import {
+  ActionTypes,
+  NARRATIVE_ACTION_TYPE,
+  NARRATIVE_TYPE,
+} from '../../types';
 import { initial_narratives_state } from '../initialStates';
 
 const narrative_reducer = (
@@ -7,29 +11,30 @@ const narrative_reducer = (
 ) => {
   switch (action.type) {
     case ActionTypes.ADD: {
-      const new_narrative = {};
-      new_narrative[action.payload.id] = {
+      const new_narrative = {
         id: action.payload.id,
         ...action.payload.new_narrative,
       };
-      return { ...old_state, ...new_narrative };
+      return [...old_state, new_narrative];
     }
     case ActionTypes.UPDATE: {
       const updated_narrative = action.payload;
-      const narratives = { ...old_state };
-      narratives[updated_narrative.id] = { ...updated_narrative };
-      return { ...old_state, ...narratives };
+      const narratives = old_state.filter((narrative: NARRATIVE_TYPE) => {
+        return narrative.id !== updated_narrative.id;
+      });
+      return [...narratives, updated_narrative];
     }
     case ActionTypes.REMOVE: {
-      const narratives = { ...old_state };
-      delete narratives[action.payload];
-      return { ...narratives };
+      const narratives = old_state.filter((narrative: NARRATIVE_TYPE) => {
+        return narrative.id !== action.payload;
+      });
+      return [...narratives];
     }
     case ActionTypes.RESET: {
       return initial_narratives_state;
     }
     case ActionTypes.LOAD: {
-      return { ...action.payload };
+      return [...action.payload];
     }
     default:
       return old_state;

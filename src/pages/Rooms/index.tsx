@@ -7,22 +7,25 @@ import {
   Input,
   SelectList,
   AddModal,
+  Modal,
 } from '../../components';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
 import {
   ROOM_TYPE,
-  Exits,
   EXIT_TYPE,
   ActionTypes,
   ButtonType,
+  NARRATIVE_TYPE,
+  SUBJECT_TYPE,
+  ITEM_TYPE,
 } from '../../types';
 import style from './rooms.module.css';
 
 export default function Rooms() {
   // init states
   const [description, set_description] = useState('');
-  const [exits, set_exits] = useState<Exits>([]);
+  const [exits, set_exits] = useState<EXIT_TYPE[]>([]);
   const [name, set_name] = useState('');
   const [item_ids, set_item_ids] = useState([]);
   const [narrative, set_narrative] = useState<number>(null);
@@ -34,6 +37,7 @@ export default function Rooms() {
   const [exits_exist, set_exits_exist] = useState<boolean>(false);
   const [is_first_room, set_is_first_room] = useState<boolean>(null);
   const [selected_exit, set_selected_exit] = useState<EXIT_TYPE>(null);
+  const [show_modal, set_show_modal] = useState<boolean>(false);
 
   const [id, set_id] = useState(1);
   const [inputRef, setInputFocus] = useFocus();
@@ -66,13 +70,6 @@ export default function Rooms() {
     { value: 'WEST', label: 'West' },
   ];
 
-  const exits_array: { location: number; direction: string; id: number }[] =
-    exits
-      ? Object.keys(exits).map((key) => {
-          return exits[key];
-        })
-      : [];
-
   const rooms_array: ROOM_TYPE[] = rooms_state
     ? Object.keys(rooms_state).map((key) => {
         return rooms_state[key];
@@ -80,8 +77,8 @@ export default function Rooms() {
     : [];
 
   useEffect(() => {
-    if (exits_array.length > 0) {
-      set_exit_id(exits_array[exits_array.length - 1].id + 1);
+    if (exits.length > 0) {
+      set_exit_id(exits[exits.length - 1].id + 1);
       set_exits_exist(true);
     }
   }, [exits]);
@@ -113,7 +110,14 @@ export default function Rooms() {
   };
 
   const handleChange = () => {
-    if (room.id || room.id === 0) {
+    if (
+      rooms_array.find((r: ROOM_TYPE) => {
+        return r.name === name;
+      }) &&
+      !room.id
+    ) {
+      set_show_modal(true);
+    } else if (room.id || room.id === 0) {
       if (name && description && narrative) {
         const stash = { item_ids, items: [] };
         dispatch_room({
@@ -145,8 +149,9 @@ export default function Rooms() {
 
   const handle_delete_exit = () => {
     if (selected_exit) {
-      const new_exits: Exits = { ...exits };
-      delete new_exits[selected_exit.id];
+      const new_exits: EXIT_TYPE[] = exits.filter(
+        (e: EXIT_TYPE) => e.id !== selected_exit.id
+      );
       set_exits(new_exits);
       dispatch_room({
         type: ActionTypes.UPDATE,
@@ -156,7 +161,7 @@ export default function Rooms() {
         },
       });
     }
-    if (exits_array.length === 0) {
+    if (exits.length === 0) {
       set_exits_exist(false);
     }
   };
@@ -193,20 +198,26 @@ export default function Rooms() {
 
   const renderExits = (): React.ReactNode => {
     if (exits) {
-      return Object.keys(exits).map((key) => {
+      return exits.map((e: EXIT_TYPE) => {
+        const direction_display = directionsOptions.find(
+          (d) => d.value === e.direction
+        ).label;
+        const exit_display = `${
+          rooms_state[e.room_id].name
+        } - ${direction_display}`;
         return (
           <RadioButton
-            key={exits[key].id}
-            id={exits[key].id}
+            key={e.id}
+            id={`${rooms_state[e.room_id].name}-e-${e.id}`}
             name="exits"
-            value={exits[key].location}
+            value={`${rooms_state[e.room_id].name}-e-${e.id}`}
             onChange={() => {
-              set_selected_exit(exits[key]);
-              set_selectedExitRadio(exits[key].id);
+              set_selected_exit(e);
+              set_selectedExitRadio(e.id);
             }}
-            checked={selectedExitRadio === exits[key].id}
+            checked={selectedExitRadio === e.id}
           >
-            {rooms_state[exits[key].location].name} - {exits[key].direction}
+            {exit_display}
           </RadioButton>
         );
       });
@@ -214,20 +225,20 @@ export default function Rooms() {
     return <></>;
   };
 
-  const itemsOptions = Object.keys(available_items).map((key) => {
-    return { label: available_items[key].name, value: available_items[key].id };
+  const itemsOptions = available_items.map((i: ITEM_TYPE) => {
+    return { label: i.name, value: i.id };
   });
 
-  const narrativesOptions = Object.keys(available_narratives).map((key) => {
+  const narrativesOptions = available_narratives.map((n: NARRATIVE_TYPE) => {
     return {
-      label: available_narratives[key].description,
-      value: available_narratives[key].id,
+      label: n.description,
+      value: n.id,
     };
   });
-  const subjectsOptions = Object.keys(available_subjects).map((key) => {
+  const subjectsOptions = available_subjects.map((s: SUBJECT_TYPE) => {
     return {
-      label: available_subjects[key].name,
-      value: available_subjects[key].id,
+      label: s.name,
+      value: s.id,
     };
   });
 
@@ -262,10 +273,10 @@ export default function Rooms() {
 
   function exitNotUsed(
     exit_location: number,
-    room_exits: { location: number; direction: string; id: number }[]
+    room_exits: { room_id: number; direction: string; id: number }[]
   ) {
     for (let i = 0; i < room_exits.length; i++) {
-      if (room_exits[i].location === exit_location) {
+      if (room_exits[i].room_id === exit_location) {
         return false;
       }
     }
@@ -274,7 +285,7 @@ export default function Rooms() {
 
   function directionNotUsed(
     direction_to_check: string,
-    room_exits: { location: number; direction: string; id: number }[]
+    room_exits: { room_id: number; direction: string; id: number }[]
   ) {
     for (let i = 0; i < room_exits.length; i++) {
       if (room_exits[i].direction === direction_to_check) {
@@ -317,7 +328,13 @@ export default function Rooms() {
             label="Narrative"
             options={narrativesOptions}
             value={find_value_by_id(narrativesOptions, narrative)}
-            onChange={(e) => set_narrative(available_narratives[e.value].id)}
+            onChange={(e) => {
+              set_narrative(
+                available_narratives.find(
+                  (n: NARRATIVE_TYPE) => n.id === e.value
+                ).id
+              );
+            }}
           />
           <div className={style.row}>
             <div className={style.col}>
@@ -382,7 +399,7 @@ export default function Rooms() {
                 return (
                   exit_location !== room.id &&
                   // exit_location !== 0 &&
-                  exitNotUsed(exit_location, exits_array)
+                  exitNotUsed(exit_location, exits)
                 );
               })}
               value={roomsOptions.filter(({ value }) => {
@@ -396,13 +413,13 @@ export default function Rooms() {
               label="Exit direction"
               options={directionsOptions.filter(
                 ({ label: direction_to_check }) => {
-                  return directionNotUsed(direction_to_check, exits_array);
+                  return directionNotUsed(direction_to_check, exits);
                 }
               )}
               value={directionsOptions.filter(
-                ({ label }) => direction === label
+                ({ value }) => direction === value
               )}
-              onChange={(e) => set_direction(e.label)}
+              onChange={(e) => set_direction(e.value)}
             />
           </AddModal>
           <div className="flex justify-around mt-5">
@@ -419,21 +436,28 @@ export default function Rooms() {
           </div>
         </form>
       </div>
+      <Modal
+        show={show_modal}
+        handle_close={() => set_show_modal(false)}
+        title="Invalid Room"
+      >
+        <p>Room already in use</p>
+      </Modal>
     </div>
   );
 
   function handle_save_exits() {
     if (location && direction) {
-      const exit = {
-        location: location,
+      const exit: EXIT_TYPE = {
+        room_id: location,
         direction: direction,
         id: exit_id,
       };
-      let new_exits: Exits;
+      let new_exits: EXIT_TYPE[];
       if (exits) {
-        new_exits = { ...exits, [exit_id]: exit };
+        new_exits = [...exits, exit];
       } else {
-        new_exits = { [exit_id]: exit };
+        new_exits = [exit];
       }
       set_exits(new_exits);
       set_showModal(false);

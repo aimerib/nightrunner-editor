@@ -1,34 +1,40 @@
-import { ActionTypes, ITEM_ACTION_TYPE } from '../../types';
+import {
+  ActionTypes,
+  ITEM_ACTION_TYPE,
+  ITEMS_STATE_TYPE,
+  ITEM_TYPE,
+} from '../../types';
 import { initial_items_state } from '../initialStates';
 const item_reducer = (
-  old_state: typeof initial_items_state,
+  old_state: ITEMS_STATE_TYPE,
   action: ITEM_ACTION_TYPE
 ) => {
   switch (action.type) {
     case ActionTypes.ADD: {
-      const new_item = {};
-      new_item[action.payload.id] = {
+      const new_item = {
         id: action.payload.id,
         ...action.payload.new_item,
       };
-      return { ...old_state, ...new_item };
+      return [...old_state, new_item];
     }
     case ActionTypes.UPDATE: {
       const updated_item = action.payload;
-      const items = { ...old_state };
-      items[updated_item.id] = { ...updated_item };
-      return { ...old_state, ...items };
+      const items = old_state.filter((item: ITEM_TYPE) => {
+        return item.id !== updated_item.id;
+      });
+      return [...items, updated_item];
     }
     case ActionTypes.REMOVE: {
-      const items = { ...old_state };
-      delete items[action.payload];
-      return { ...items };
+      const items = old_state.filter((item: ITEM_TYPE) => {
+        return item.id !== action.payload;
+      });
+      return [...items];
     }
     case ActionTypes.RESET: {
       return initial_items_state;
     }
     case ActionTypes.LOAD: {
-      return { ...action.payload };
+      return [...action.payload];
     }
     default:
       return old_state;

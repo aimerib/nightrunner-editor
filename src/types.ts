@@ -1,13 +1,10 @@
 import { Dispatch, SetStateAction } from 'react';
 
 //#region Exit
-export type Exits = {
-  [id: number]: EXIT_TYPE;
-};
 
 export type EXIT_TYPE = {
   direction: string;
-  location: number;
+  room_id: number;
   id: number;
 };
 //#endregion
@@ -56,12 +53,11 @@ export type EVENT_ACTION_TYPE =
 //#region Verb
 export type VERB_TYPE = {
   id?: number,
-  name: string;
-  aliases: string[];
+  names: string[];
+  // name: string;
+  // aliases: string[];
 };
-export type VERB_STATE_TYPE = {
-  [key: number]: VERB_TYPE;
-} | Record<string, never>;
+export type VERB_STATE_TYPE = VERB_TYPE[] | [];
 
 export type VERB_ACTION_TYPE =
   | {
@@ -89,7 +85,7 @@ export type ROOM_TYPE = {
   id?: number,
   name: string;
   description: string;
-  exits: Exits;
+  exits: EXIT_TYPE[];
   stash: { items?: number[]; item_ids?: number[] };
   room_events?: number[];
   narrative: number;
@@ -126,9 +122,7 @@ export type NARRATIVE_TYPE = {
   description: string;
 };
 
-export type NARRATIVES_STATE_TYPE = {
-  [key: number]: NARRATIVE_TYPE;
-} | Record<string, never>;
+export type NARRATIVES_STATE_TYPE = NARRATIVE_TYPE[] | [];
 
 export type NARRATIVE_ACTION_TYPE =
   | {
@@ -158,9 +152,7 @@ export type SUBJECT_TYPE = {
   description: string;
 };
 
-export type SUBJECTS_STATE_TYPE = {
-  [key: number]: SUBJECT_TYPE;
-} | Record<string, never>;
+export type SUBJECTS_STATE_TYPE = SUBJECT_TYPE[] | [];
 
 export type SUBJECT_ACTION_TYPE =
   | {
@@ -208,9 +200,7 @@ export type ITEM_TYPE = {
   id?: number,
   name: string, description: string, can_pick: boolean
 };
-export type ITEMS_STATE_TYPE = {
-  [key: number]: ITEM_TYPE;
-} | Record<string, never>;
+export type ITEMS_STATE_TYPE = ITEM_TYPE[]| [];
 //#endregion
 
 //#region ActionTypes

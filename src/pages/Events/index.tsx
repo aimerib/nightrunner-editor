@@ -8,7 +8,15 @@ import {
   SelectList,
   Checkbox,
 } from '../../components';
-import { EVENT_TYPE, ActionTypes, ButtonType } from '../../types';
+import {
+  EVENT_TYPE,
+  ActionTypes,
+  ButtonType,
+  ITEM_TYPE,
+  NARRATIVE_TYPE,
+  SUBJECT_TYPE,
+  VERB_TYPE,
+} from '../../types';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
 import style from './events.module.css';
@@ -130,7 +138,11 @@ export default function Events() {
   };
 
   const handleDelete = () => {
+    const room = available_rooms[location];
+    room.room_events = room.room_events.filter((id) => id !== event.id);
+
     dispatch_event({ type: ActionTypes.REMOVE, payload: event.id });
+    dispatch_rooms({ type: ActionTypes.UPDATE, payload: room });
     resetInputs();
   };
 
@@ -165,8 +177,8 @@ export default function Events() {
       );
     });
   };
-  const itemsOptions = Object.keys(available_items).map((key) => {
-    return { label: available_items[key].name, value: available_items[key].id };
+  const itemsOptions = available_items.map((i: ITEM_TYPE) => {
+    return { label: i.name, value: i.id };
   });
   const roomsOptions = Object.keys(available_rooms)
     .filter((key) => available_rooms[key].name !== 'Intro')
@@ -176,16 +188,16 @@ export default function Events() {
         value: available_rooms[key].id,
       };
     });
-  const narrativesOptions = Object.keys(available_narratives).map((key) => {
+  const narrativesOptions = available_narratives.map((n: NARRATIVE_TYPE) => {
     return {
-      label: available_narratives[key].description,
-      value: available_narratives[key].id,
+      label: n.description,
+      value: n.id,
     };
   });
-  const subjectsOptions = Object.keys(available_subjects).map((key) => {
+  const subjectsOptions = available_subjects.map((s: SUBJECT_TYPE) => {
     return {
-      label: available_subjects[key].name,
-      value: available_subjects[key].id,
+      label: s.name,
+      value: s.id,
     };
   });
   const eventsOptions = Object.keys(events_state).map((key) => {
@@ -195,10 +207,10 @@ export default function Events() {
     };
   });
 
-  const verbsOptions = Object.keys(available_verbs).map((key) => {
+  const verbsOptions = available_verbs.map((v: VERB_TYPE) => {
     return {
-      label: available_verbs[key].name,
-      value: available_verbs[key].id,
+      label: v.names[0],
+      value: v.id,
     };
   });
 
@@ -277,7 +289,10 @@ export default function Events() {
                   options={itemsOptions}
                   value={find_value_by_id(itemsOptions, required_item)}
                   onChange={(e) => {
-                    set_required_item(available_items[e.value].id);
+                    set_required_item(
+                      available_items.find((i: ITEM_TYPE) => i.id === e.value)
+                        .id
+                    );
                   }}
                 />
               </div>
@@ -287,7 +302,11 @@ export default function Events() {
                   options={subjectsOptions}
                   value={find_value_by_id(subjectsOptions, required_subject)}
                   onChange={(e) => {
-                    set_required_subject(available_subjects[e.value].id);
+                    set_required_subject(
+                      available_subjects.find(
+                        (s: SUBJECT_TYPE) => s.id === e.value
+                      ).id
+                    );
                   }}
                 />
               </div>
@@ -299,7 +318,11 @@ export default function Events() {
                   options={narrativesOptions}
                   value={find_value_by_id(narrativesOptions, narrative)}
                   onChange={(e) => {
-                    set_narrative(available_narratives[e.value].id);
+                    set_narrative(
+                      available_narratives.find(
+                        (n: NARRATIVE_TYPE) => n.id === e.value
+                      ).id
+                    );
                   }}
                 />
               </div>
@@ -318,7 +341,12 @@ export default function Events() {
                   label="Add item"
                   options={itemsOptions}
                   value={find_value_by_id(itemsOptions, add_item)}
-                  onChange={(e) => set_add_item(available_items[e.value].id)}
+                  onChange={(e) => {
+                    set_add_item(
+                      available_items.find((i: ITEM_TYPE) => i.id === e.value)
+                        .id
+                    );
+                  }}
                 />
               </div>
               <div className={style.col}>
@@ -326,7 +354,12 @@ export default function Events() {
                   label="Remove item"
                   options={itemsOptions}
                   value={find_value_by_id(itemsOptions, remove_item)}
-                  onChange={(e) => set_remove_item(available_items[e.value].id)}
+                  onChange={(e) => {
+                    set_remove_item(
+                      available_items.find((i: ITEM_TYPE) => i.id === e.value)
+                        .id
+                    );
+                  }}
                 />
               </div>
             </div>

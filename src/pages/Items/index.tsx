@@ -27,13 +27,13 @@ export default function Items(): JSX.Element {
   const new_item: ITEM_TYPE = { name, description, can_pick };
 
   useEffect(() => {
-    const items: ITEM_TYPE[] = Object.keys(items_state).map(
-      (key): ITEM_TYPE => {
-        return items_state[key];
-      }
-    );
-    if (items.length > 0) {
-      set_id(items[items.length - 1].id + 1);
+    // const items: ITEM_TYPE[] = Object.keys(items_state).map(
+    //   (key): ITEM_TYPE => {
+    //     return items_state[key];
+    //   }
+    // );
+    if (items_state.length > 0) {
+      set_id(items_state[items_state.length - 1].id + 1);
     }
   }, [items_state]);
 
@@ -66,23 +66,23 @@ export default function Items(): JSX.Element {
   };
 
   const renderItems = (): JSX.Element[] => {
-    return Object.keys(items_state).map((key): JSX.Element => {
+    return items_state.map((i: ITEM_TYPE): JSX.Element => {
       return (
         <RadioButton
-          key={items_state[key].id}
-          id={items_state[key].name}
+          key={i.id}
+          id={i.name}
           name="items"
-          value={items_state[key].name}
+          value={i.name}
           onChange={() => {
-            set_item(items_state[key]);
-            set_name(items_state[key].name);
-            set_can_pick(items_state[key].can_pick);
-            set_description(items_state[key].description);
-            set_selectedRadio(items_state[key].name);
+            set_item(i);
+            set_name(i.name);
+            set_can_pick(i.can_pick);
+            set_description(i.description);
+            set_selectedRadio(i.name);
           }}
-          checked={selectedRadio === items_state[key].name}
+          checked={selectedRadio === i.name}
         >
-          {items_state[key].name} - {items_state[key].description}
+          {i.name} - {i.description}
         </RadioButton>
       );
     });

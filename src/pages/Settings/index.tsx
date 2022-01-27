@@ -8,22 +8,28 @@ import { open } from '@tauri-apps/api/dialog';
 export default function Settings(): JSX.Element {
   const { gameState } = useContext(store);
   const [game_folder, set_game_folder] = gameState.folder;
-  const game_name = gameState.name[0];
-  const game_intro = gameState.intro[0];
-  const save_settings = useContext(store).save_settings;
+  const [game_name, set_game_name] = gameState.name;
+  const [game_intro, set_game_intro] = gameState.intro;
+  // const save_settings = useContext(store).save_settings;
   const [name, set_name] = useState(game_name);
   const [intro, set_intro] = useState(game_intro);
   useEffect(() => {
-    if (name !== game_name || intro !== game_intro) {
-      if (!name && game_name) {
-        set_name(game_name);
-      } else if (!intro && game_intro) {
-        set_intro(game_intro);
-      } else {
-        save_settings(name, intro);
-      }
-    }
-  }, [name, intro]);
+    set_name(game_name);
+    set_intro(game_intro);
+  }, [game_name, game_intro]);
+  // useEffect(() => {
+  //   if (name !== game_name || intro !== game_intro) {
+  //     if (!name && game_name) {
+  //       set_name(game_name);
+  //     }
+  //     if (!intro && game_intro) {
+  //       set_intro(game_intro);
+  //     }
+  //   }
+  //   if (!game_name || !game_intro) {
+  //     save_settings(name, intro);
+  //   }
+  // }, [name, intro, game_name, game_intro]);
 
   return (
     <div className="flex flex-col w-full h-full gap-5 bg-nr-main text-green-nr">
@@ -31,16 +37,20 @@ export default function Settings(): JSX.Element {
         label="Game Name:"
         name="description"
         autoFocus
-        value={game_name}
-        onChange={(e) => set_name(e.target.value)}
+        value={name}
+        onChange={(e) => {
+          set_name(e.target.value);
+          set_game_name(e.target.value);
+        }}
       />
       <Input
         label="Game Introduction:"
         name="text"
         multiline
-        value={game_intro}
+        value={intro}
         onChange={(e) => {
           set_intro(e.target.value);
+          set_game_intro(e.target.value);
         }}
       />
       <div className="flex flex-row gap-5">

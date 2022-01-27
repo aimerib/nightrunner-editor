@@ -25,21 +25,25 @@ export default function Verbs(): JSX.Element {
 
   // init verbs state
   const [verbs_state, dispatch_item] = useContext(store).gameState.verbs;
-  const verbs: VERB_TYPE[] = Object.keys(verbs_state).map((key): VERB_TYPE => {
-    return verbs_state[key];
-  });
+  // const verbs: VERB_TYPE[] = Object.keys(verbs_state).map((key): VERB_TYPE => {
+  //   return verbs_state[key];
+  // });
   // holds the new verb object
-  const new_verb: VERB_TYPE = { name, aliases };
+  const new_verb: VERB_TYPE = { names: [name, ...aliases] };
 
   useEffect(() => {
-    if (verbs.length > 0) {
-      set_id(verbs[verbs.length - 1].id + 1);
+    if (verbs_state.length > 0) {
+      set_id(verbs_state[verbs_state.length - 1].id + 1);
     }
   }, [verbs_state]);
 
   const handleChange = (): void => {
     if (
-      verbs.find((v) => v.name === name || v.aliases.includes(name)) &&
+      verbs_state.find((v: VERB_TYPE) => {
+        return (
+          v.names[0] === name || v.names.slice(1, v.names.length).includes(name)
+        );
+      }) &&
       !verb.id
     ) {
       set_show_modal(true);
@@ -47,10 +51,13 @@ export default function Verbs(): JSX.Element {
       if (name) {
         dispatch_item({
           type: ActionTypes.UPDATE,
-          payload: { ...verb, name, aliases },
+          payload: { ...verb, names: [name, ...aliases] },
         });
       }
-    } else if (new_verb.name && !verbs.find((v) => v.name === name)) {
+    } else if (
+      new_verb.names &&
+      !verbs_state.find((v: VERB_TYPE) => v.names[0] === name)
+    ) {
       dispatch_item({ type: ActionTypes.ADD, payload: { new_verb, id } });
     }
     set_verb({} as VERB_TYPE);
@@ -71,23 +78,25 @@ export default function Verbs(): JSX.Element {
   };
 
   const renderVerbs = (): JSX.Element[] => {
-    return Object.keys(verbs_state).map((key): JSX.Element => {
-      const aliases_string = verbs_state[key].aliases.join(', ');
+    return verbs_state.map((v: VERB_TYPE): JSX.Element => {
+      const aliases_string = v.names.slice(1, v.names.length).join(', ');
       return (
         <RadioButton
-          key={verbs_state[key].id}
-          id={verbs_state[key].name}
+          key={v.id}
+          id={v.names[0]}
           name="verbs"
-          value={verbs_state[key].name}
+          value={v.names[0]}
           onChange={() => {
-            set_verb(verbs_state[key]);
-            set_name(verbs_state[key].name);
-            set_aliases(verbs_state[key].aliases);
-            set_selectedRadio(verbs_state[key].name);
+            set_verb(v);
+            set_name(v.names[0]);
+            set_aliases(v.names.slice(1, v.names.length));
+            set_selectedRadio(v.names[0]);
           }}
-          checked={selectedRadio === verbs_state[key].name}
+          checked={selectedRadio === v.names[0]}
         >
-          {verbs_state[key].name} - aliases:&nbsp;&nbsp;{aliases_string}
+          {`${v.names[0]}${
+            aliases_string ? ` - aliases:\u00a0\u00a0${aliases_string}` : ''
+          }`}
         </RadioButton>
       );
     });
@@ -131,11 +140,7 @@ export default function Verbs(): JSX.Element {
 
   const handle_add_alias = (): void => {
     if (alias_name) {
-      if (
-        verbs.find(
-          (v) => v.aliases.includes(alias_name) || v.name === alias_name
-        )
-      ) {
+      if (verbs_state.find((v: VERB_TYPE) => v.names.includes(alias_name))) {
         set_show_modal(true);
       } else {
         set_aliases([...aliases, alias_name.toLowerCase()]);

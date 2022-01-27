@@ -20,15 +20,9 @@ export default function Narratives() {
   // holds the new narrative object
   const new_narrative = { text, description };
 
-  const narratives_array = narratives_state
-    ? Object.keys(narratives_state).map((key) => {
-        return narratives_state[key];
-      })
-    : [];
-
   useEffect(() => {
-    if (narratives_array.length > 0) {
-      set_id(narratives_array[narratives_array.length - 1].id + 1);
+    if (narratives_state.length > 0) {
+      set_id(narratives_state[narratives_state.length - 1].id + 1);
     }
   }, []);
 
@@ -64,23 +58,23 @@ export default function Narratives() {
   };
 
   const renderItems = () => {
-    return Object.keys(narratives_state).map((key) => {
+    return narratives_state.map((n: NARRATIVE_TYPE) => {
       return (
         <RadioButton
-          key={narratives_state[key].id}
-          id={narratives_state[key].description}
+          key={n.id}
+          id={n.description}
           name="narratives"
-          value={narratives_state[key].text}
+          value={n.text}
           onChange={() => {
-            set_narrative(narratives_state[key]);
-            set_text(narratives_state[key].text);
-            set_description(narratives_state[key].description);
-            set_selectedRadio(narratives_state[key].description);
+            set_narrative(n);
+            set_text(n.text);
+            set_description(n.description);
+            set_selectedRadio(n.description);
             setInputFocus();
           }}
-          checked={selectedRadio === narratives_state[key].description}
+          checked={selectedRadio === n.description}
         >
-          {narratives_state[key].description} - {narratives_state[key].text}
+          {n.description} - {n.text}
         </RadioButton>
       );
     });

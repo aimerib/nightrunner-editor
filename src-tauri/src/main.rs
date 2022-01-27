@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::collections::{BTreeMap, HashMap};
 use std::fs;
+use tauri::api::dir::DiskEntry;
 use tauri::api::{dir::read_dir, path};
 
 // region: types
@@ -219,8 +220,12 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
 
 #[tauri::command]
 fn load_game(game_folder: String) -> Result<BTreeMap<String, Value>, String> {
-  let files = read_dir(&game_folder, false).unwrap();
-  let files_strings = files
+  let all_files = read_dir(&game_folder, false).unwrap();
+  let game_files = all_files
+    .iter()
+    .filter(|file| file.children.is_none() && file.name.as_ref().unwrap().ends_with(".yml"))
+    .collect::<Vec<&DiskEntry>>();
+  let files_strings = game_files
     .iter()
     .map(|file| {
       (

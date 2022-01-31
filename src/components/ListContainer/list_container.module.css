@@ -12,5 +12,8 @@
 }
 
 .small {
-  height: 8rem;
+  height: 7rem;
+}
+.x-small {
+  height: 3rem;
 }

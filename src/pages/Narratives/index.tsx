@@ -99,6 +99,8 @@ export default function Narratives() {
           onChange={(e) => {
             set_text(e.target.value);
           }}
+          helperText={`You can use curly braces to insert item names into the narrative. 
+            Items inside curly braces will be styled in the engine if the items exist in game.`}
         />
       </>
     );

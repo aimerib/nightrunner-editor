@@ -11,6 +11,7 @@ type ComponentProps = {
   label: string;
   disabled?: boolean;
   className?: string;
+  helperText?: string;
 };
 
 interface InputProps extends ComponentProps {
@@ -34,6 +35,7 @@ const Input: FC<InputProps | TextAreaProps> = ({
   innerRef,
   disabled,
   className,
+  helperText,
 }): JSX.Element => {
   return (
     <div
@@ -42,9 +44,24 @@ const Input: FC<InputProps | TextAreaProps> = ({
       } ${className ? className : ''}`}
     >
       {label && (
-        <label className="pb-2" htmlFor={name}>
-          {label}
-        </label>
+        <div className="flex pb-2">
+          <label className="self-center" htmlFor={name}>
+            {label}
+          </label>
+          {helperText && (
+            <div
+              style={{
+                height: 'max-content',
+                padding: '0 7px',
+                borderRadius: '50%',
+              }}
+              data-text={helperText}
+              className={input.tooltip}
+            >
+              ?
+            </div>
+          )}
+        </div>
       )}
       {multiline ? (
         <textarea

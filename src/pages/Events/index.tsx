@@ -16,6 +16,8 @@ import {
   NARRATIVE_TYPE,
   SUBJECT_TYPE,
   VERB_TYPE,
+  ROOM_ACTION_TYPE,
+  ROOM_TYPE,
 } from '../../types';
 import { store } from '../../store';
 import { useFocus } from '../../utils';
@@ -115,7 +117,17 @@ export default function Events() {
             description,
           },
         });
-
+        const room: ROOM_TYPE = available_rooms[location];
+        dispatch_rooms({
+          type: ActionTypes.UPDATE,
+          payload: {
+            ...room,
+            room_events: [...room.room_events, event.id].filter(
+              //de-dupe events
+              (eid, index, self) => self.indexOf(eid) === index
+            ),
+          } as ROOM_TYPE,
+        } as ROOM_ACTION_TYPE);
         resetInputs();
       }
     } else if (
@@ -130,7 +142,10 @@ export default function Events() {
       dispatch_event({ type: ActionTypes.ADD, payload: { new_event, id } });
       dispatch_rooms({
         type: ActionTypes.UPDATE,
-        payload: { ...room, room_events: [...room.room_events, id] },
+        payload: {
+          ...room,
+          room_events: [...room.room_events, id],
+        },
       });
       set_id(id);
       resetInputs();
@@ -270,7 +285,20 @@ export default function Events() {
                   label="Event location"
                   options={roomsOptions}
                   value={find_value_by_id(roomsOptions, location)}
-                  onChange={(e) => set_location(available_rooms[e.value].id)}
+                  onChange={(e) => {
+                    const room: ROOM_TYPE = available_rooms[location];
+                    dispatch_rooms({
+                      type: ActionTypes.UPDATE,
+                      payload: {
+                        ...room,
+                        room_events: room.room_events.filter(
+                          //de-dupe events
+                          (eid) => eid !== location
+                        ),
+                      } as ROOM_TYPE,
+                    } as ROOM_ACTION_TYPE);
+                    set_location(available_rooms[e.value].id);
+                  }}
                 />
               </div>
               <div className={style.col}>

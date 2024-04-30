@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "0.1.0"
+version = "0.2.0"
 description = "A Tauri App"
 authors = ["you"]
 license = ""
@@ -12,14 +12,16 @@ build = "src/build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.0.0-beta.4" }
+tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
 serde_json = { version = "1.0", features = ["preserve_order"] }
-serde_yaml = { version = "0.8" }
+serde_yaml = { version = "0.9.33" }
 serde = { version = "1.0", features = ["derive"] }
-# tauri = { version = "1.0.0-beta.8", features = ["api-all"] }
-tauri = {git = "https://github.com/tauri-apps/tauri", branch = "next", features = ["api-all"] }
-[features]
-default = [ "custom-protocol" ]
-custom-protocol = [ "tauri/custom-protocol" ]
+tauri = { version = "2.0.0-beta", features = [] }
+directories = "5.0"
+
+# nightrunner_lib = "0.3.1"
+nightrunner_lib = { path = "../../nightrunner-lib" }
+tauri-plugin-dialog = "2.0.0-beta"
+tauri-plugin-notification = "2.0.0-beta"

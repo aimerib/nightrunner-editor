@@ -1,0 +1,23 @@
+.top_bar {
+  background-color: #000;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.top_bar_button {
+  background-color: #00ff00;
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  margin-right: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+}
+
+.top_bar_button:hover {
+  background-color: #00cc00;
+}

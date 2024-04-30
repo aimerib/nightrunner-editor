@@ -2,14 +2,14 @@
   display: grid;
   justify-content: end;
   padding: 0.5rem;
-  font-weight: 800;
+  font-weight: 400;
+  font-spacing: 0.1rem;
   @apply bg-nr-800 text-green-nr font-logo;
 }
 .wrapper {
-  @apply fixed transform -translate-x-1/2 -translate-y-1/2 shadow-modal;
+  @apply fixed w-1/5 transform -translate-x-1/2 -translate-y-1/2 shadow-modal;
   @apply z-50 bg-nr-600 top-1/2 left-1/2 text-green-nr h-1/4;
   grid-template-rows: 3rem 2fr 1fr;
-  width: 40%;
 }
 .modal_content {
   @apply p-10 text-2xl text-center;

@@ -1,11 +1,13 @@
+import './Modal.css';
+
 import React from 'react';
-import modal from './modal.module.css';
+
 import Button from '../Button';
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
     <div
-      className={modal.close_button}
+      className="close_button"
       onClick={() => onClose()}
       id="titlebar-close"
     >
@@ -35,13 +37,13 @@ export default function Modal({
   children: React.ReactNode;
   title: string;
   handle_close: () => void;
-}): JSX.Element {
+}): JSX.Element | null {
   if (show === false) {
     return null;
   }
   return (
-    <div className={modal.wrapper}>
-      <div className={modal.title_bar}>
+    <div className="wrapper">
+      <div className="title_bar">
         <div className="fixed transform -translate-x-1/2 top-3 left-1/2">
           {title}
         </div>
@@ -49,7 +51,7 @@ export default function Modal({
           <CloseButton onClose={handle_close} />
         </div>
       </div>
-      <div className={modal.modal_content}>{children}</div>
+      <div className="modal_content">{children}</div>
       <div className="flex self-end justify-around mb-5 justify-self-center">
         <Button
           className="self-end mb-5 justify-self-center"

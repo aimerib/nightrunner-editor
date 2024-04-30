@@ -1,12 +1,15 @@
-import React from 'react';
-import { appWindow } from '@tauri-apps/api/window';
-import title_bar from './title_bar.module.css';
+import './TitleBar.css';
+
+import { getCurrent } from '@tauri-apps/api/window';
 
 export const MinimizeButton = () => {
   return (
     <div
-      className={title_bar.titlebar_button}
-      onClick={() => appWindow.minimize()}
+      className="titlebar_button"
+      onClick={() => {
+        const appWindow = getCurrent();
+        appWindow.minimize()
+      }}
       id="titlebar-minimize"
     >
       <svg

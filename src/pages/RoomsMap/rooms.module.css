@@ -1,0 +1,33 @@
+.row {
+  display: flex;
+  gap: 20px;
+}
+.col {
+  flex: 50%;
+}
+
+.room_node {
+  width: 120px;
+  height: 60px;
+  border: 2px solid #00ff00;
+  position: relative;
+  background-color: #000;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #00ff00;
+  font-family: monospace;
+  font-size: 8px;
+  padding: 5px;
+}
+
+.room_node::active {
+  background-color: #00ff00;
+  color: #000;
+}
+
+.react-flow__node-custom.selected {
+  box-shadow: 0 0 0 0.5px #1a192b;
+}

@@ -1,0 +1,10 @@
+.react-flow__node-custom.selected {
+  @apply shadow-nr;
+  box-shadow: 0 0 0 2px ;
+  border-radius: 10px;
+}
+
+.react-flow__controls-button {
+  @apply !bg-nr-700;
+  border-bottom: 2px solid rgb(37 37 37 / var(--tw-bg-opacity)) !important;
+}

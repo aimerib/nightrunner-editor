@@ -7,8 +7,9 @@ import {
   Modal,
 } from '../../components';
 import { store } from '../../store';
-import { VERB_TYPE, ActionTypes, ButtonType } from '../../types';
+import { ActionTypes, ButtonType } from '../../types';
 import { useFocus } from '../../utils';
+import { Verb, VerbFunction } from '@nightrunner/nightrunner_lib';
 
 export default function Verbs(): JSX.Element {
   // init states
@@ -19,7 +20,7 @@ export default function Verbs(): JSX.Element {
   const [selectedAliasRadio, set_selectedAliasRadio] = useState<string>('');
   const [show_modal, set_show_modal] = useState<boolean>(false);
 
-  const [verb, set_verb] = useState({} as VERB_TYPE);
+  const [verb, set_verb] = useState({} as Verb);
   const [alias_name, set_alias_name] = useState<string>('');
   const [aliases, set_aliases] = useState<string[]>([]);
 
@@ -29,7 +30,7 @@ export default function Verbs(): JSX.Element {
   //   return verbs_state[key];
   // });
   // holds the new verb object
-  const new_verb: VERB_TYPE = { names: [name, ...aliases] };
+  const new_verb: Verb = { names: [name, ...aliases], id, verb_function: 'normal'};
 
   useEffect(() => {
     if (verbs_state.length > 0) {
@@ -39,7 +40,7 @@ export default function Verbs(): JSX.Element {
 
   const handleChange = (): void => {
     if (
-      verbs_state.find((v: VERB_TYPE) => {
+      verbs_state.find((v: Verb) => {
         return (
           v.names[0] === name || v.names.slice(1, v.names.length).includes(name)
         );
@@ -56,11 +57,11 @@ export default function Verbs(): JSX.Element {
       }
     } else if (
       new_verb.names &&
-      !verbs_state.find((v: VERB_TYPE) => v.names[0] === name)
+      !verbs_state.find((v: Verb) => v.names[0] === name)
     ) {
       dispatch_item({ type: ActionTypes.ADD, payload: { new_verb, id } });
     }
-    set_verb({} as VERB_TYPE);
+    set_verb({} as Verb);
     set_selectedRadio('');
     set_alias_name('');
     set_name('');
@@ -78,7 +79,7 @@ export default function Verbs(): JSX.Element {
   };
 
   const renderVerbs = (): JSX.Element[] => {
-    return verbs_state.map((v: VERB_TYPE): JSX.Element => {
+    return verbs_state.map((v: Verb): JSX.Element => {
       const aliases_string = v.names.slice(1, v.names.length).join(', ');
       return (
         <RadioButton
@@ -140,7 +141,7 @@ export default function Verbs(): JSX.Element {
 
   const handle_add_alias = (): void => {
     if (alias_name) {
-      if (verbs_state.find((v: VERB_TYPE) => v.names.includes(alias_name))) {
+      if (verbs_state.find((v: Verb) => v.names.includes(alias_name))) {
         set_show_modal(true);
       } else {
         set_aliases([...aliases, alias_name.toLowerCase()]);

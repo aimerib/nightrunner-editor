@@ -1,14 +1,15 @@
-import React, { useContext } from 'react';
-import { TitleBar, SideNav } from './components';
+import { useContext } from 'react';
+
+import { SideNav, TitleBar } from './components';
 import {
-  Rooms,
-  Items,
-  Subjects,
-  Narratives,
   Events,
+  Items,
+  Narratives,
+  Rooms,
+  RoomsMap,
   Settings,
-  Verbs,
-} from './pages';
+  Subjects,
+  Verbs} from './pages';
 import { store } from './store';
 const data = [
   { name: 'Settings', component: <Settings /> },
@@ -17,6 +18,7 @@ const data = [
   { name: 'Subjects', component: <Subjects /> },
   { name: 'Narratives', component: <Narratives /> },
   { name: 'Rooms', component: <Rooms /> },
+  { name: 'Rooms Map', component: <RoomsMap /> },
   { name: 'Events', component: <Events /> },
 ];
 

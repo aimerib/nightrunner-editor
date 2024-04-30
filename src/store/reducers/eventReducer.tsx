@@ -1,34 +1,29 @@
-import { EVENT_ACTION_TYPE, ActionTypes } from '../../types';
+import { Event } from '@nightrunner/nightrunner_lib';
+
+import { ActionTypes, EVENT_ACTION, } from '../../types';
 import { initial_events_state } from '../initialStates';
 const event_reducer = (
   old_state: typeof initial_events_state,
-  action: EVENT_ACTION_TYPE
+  action: EVENT_ACTION
 ) => {
   switch (action.type) {
     case ActionTypes.ADD: {
-      const new_event = {};
-      new_event[action.payload.id] = {
-        id: action.payload.id,
-        ...action.payload.new_event,
-      };
-      return { ...old_state, ...new_event };
+      return [...old_state, action.payload.new_event];
     }
     case ActionTypes.UPDATE: {
       const updated_event = action.payload;
-      const events = { ...old_state };
-      events[updated_event.id] = { ...updated_event };
-      return { ...old_state, ...events };
+      return old_state.map(
+        (event: Event) => (event.id === updated_event.id ? { ...event, ...updated_event } : event)
+      );
     }
     case ActionTypes.REMOVE: {
-      const events = { ...old_state };
-      delete events[action.payload];
-      return { ...events };
+      return old_state.filter((event: Event) => event.id !== action.payload);
     }
     case ActionTypes.RESET: {
       return initial_events_state;
     }
     case ActionTypes.LOAD: {
-      return { ...action.payload };
+      return [...action.payload];
     }
     default:
       return old_state;

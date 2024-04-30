@@ -19,8 +19,9 @@
     "react/require-default-props": "off",
     "callback-return": "off",
     "no-shadow": "off",
-    "@typescript-eslint/no-shadow": ["error"],
-    "indent": "off"
+    "@typescript-eslint/no-shadow": "error",
+    "indent": "off",
+    "max-len": ["error", { "code": 120 }]
   },
   "plugins": ["react-hooks", "@typescript-eslint"],
   "overrides": [

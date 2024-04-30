@@ -1,5 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
-import list_container from './list_container.module.css';
+import './ListContainer.css';
+
+import React, { useEffect, useRef, useState } from 'react';
 
 type ListContainerProps = {
   /** @param {React.ReactNode} children - Elements to be rendered in the list */
@@ -22,7 +23,7 @@ const ListContainer = ({
   scrollable = false,
 }: ListContainerProps): JSX.Element => {
   const listContainerRef = useRef<HTMLDivElement>(null);
-  const [height, set_height] = useState(null);
+  const [height, set_height] = useState(0);
   const [children_count, set_children_count] = useState(0);
 
   useEffect(() => {
@@ -47,17 +48,15 @@ const ListContainer = ({
   return (
     <div
       style={{ gridTemplateRows: 'min-content' }}
-      className={`${children_count > 0 ? '' : 'grid'} ${
-        className ? ` ${className}` : ''
-      }`}
+      className={`${children_count > 0 ? '' : 'grid'} ${className ? ` ${className}` : ''
+        }`}
     >
       <p className="h-auto pb-2 text-xl font-bold">{label}</p>
       <div
         ref={listContainerRef}
         style={{ height: decide_height() }}
-        className={`bg-nr-900 ring-inset ring-gray-900 ring-1 nr-input ${
-          scrollable ? list_container.scrollable : ''
-        } ${small ? list_container.small : ''}`}
+        className={`bg-nr-900 ring-inset ring-gray-900 ring-1 nr-input ${scrollable ? 'scrollable' : ''
+          } ${small ? 'small' : ''}`}
       >
         {children ? children : <span>No exits yet</span>}
       </div>

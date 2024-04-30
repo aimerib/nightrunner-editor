@@ -1,6 +1,8 @@
+import './Button.css';
+
 import React from 'react';
+
 import { ButtonType } from '../../types';
-import button from './button.module.css';
 
 export default function Button({
   children,
@@ -15,17 +17,16 @@ export default function Button({
   type?: ButtonType;
   disabled?: boolean;
 }) {
-  const run_callback_with_delay = (e) => {
-    setTimeout(() => onClick(), 200);
+  const run_callback_with_delay = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setTimeout(() => onClick && onClick(), 200);
     e.preventDefault();
   };
   if (onClick) {
     return (
       <button
         disabled={disabled}
-        className={`${
-          disabled ? button.disabled_button : button.button
-        } ${className} text-2.5xl`}
+        className={`${disabled ? 'disabled_button' : 'button'
+          } ${className} text-2.5xl`}
         type={type === ButtonType.SUBMIT ? 'submit' : 'button'}
         onClick={run_callback_with_delay}
       >
@@ -36,9 +37,8 @@ export default function Button({
   return (
     <button
       disabled={disabled}
-      className={`${
-        disabled ? button.disabled_button : button.button
-      } ${className} text-2.5xl`}
+      className={`${disabled ? 'disabled_button' : 'button'
+        } ${className} text-2.5xl`}
       type={type === ButtonType.SUBMIT ? 'submit' : 'button'}
     >
       {children}

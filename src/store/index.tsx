@@ -1,31 +1,32 @@
-import React, { createContext, useReducer, useState } from 'react';
+import { createContext, useReducer, useState } from 'react';
+
 import {
-  room_reducer,
-  item_reducer,
-  narrative_reducer,
-  subject_reducer,
-  event_reducer,
-  verb_reducer,
-} from './reducers';
+  ActionTypes,
+  GAME_SETTINGS,
+  GAME_STATE,
+  NRContext,
+} from '../types';
 import {
-  initial_items_state,
-  initial_rooms_state,
   initial_events_state,
+  initial_items_state,
   initial_narratives_state,
+  initial_rooms_state,
   initial_subjects_state,
   initial_verbs_state,
 } from '././initialStates';
 import {
-  GAME_STATE_TYPE,
-  NRContext,
-  ActionTypes,
-  GAME_SETTINGS_TYPE,
-} from '../types';
+  event_reducer,
+  item_reducer,
+  narrative_reducer,
+  room_reducer,
+  subject_reducer,
+  verb_reducer,
+} from './reducers';
 
 const store = createContext({} as NRContext);
 const { Provider } = store;
 
-const StateProvider = ({ children }) => {
+const StateProvider = ({ children }: { children: React.ReactNode }) => {
   const [name, set_name] = useState('');
   const [folder, set_folder] = useState('');
   const [intro, set_intro] = useState('');
@@ -92,7 +93,7 @@ const StateProvider = ({ children }) => {
     set_intro(game_intro);
   };
 
-  const load_game = (game_settings: GAME_SETTINGS_TYPE) => {
+  const load_game = (game_settings: GAME_SETTINGS) => {
     const rooms = game_settings.rooms;
     const items = game_settings.items;
     const events = game_settings.events;
@@ -109,7 +110,7 @@ const StateProvider = ({ children }) => {
     set_intro(game_intro);
   };
 
-  const gameState: GAME_STATE_TYPE = {
+  const gameState: GAME_STATE = {
     verbs: [verbs_state, dispatch_verb],
     items: [items_state, dispatch_item],
     rooms: [rooms_state, dispatch_room],
@@ -136,4 +137,4 @@ const StateProvider = ({ children }) => {
   );
 };
 
-export { store, StateProvider };
+export { StateProvider, store };

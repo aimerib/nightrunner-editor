@@ -1,11 +1,13 @@
-import modal from './warningmodal.module.css';
+import './WarningModal.css';
+
 import React from 'react';
+
 import Button from '../Button';
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
     <div
-      className={modal.close_button}
+      className="close_button"
       onClick={() => onClose()}
       id="titlebar-close"
     >
@@ -37,13 +39,13 @@ export default function WarningModal({
   title: string;
   handle_close: () => void;
   callback: () => void;
-}): JSX.Element {
+}): JSX.Element | null {
   if (show === false) {
     return null;
   }
   return (
-    <div className={modal.wrapper}>
-      <div className={modal.title_bar}>
+    <div className="wrapper">
+      <div className="title_bar">
         <div className="fixed transform -translate-x-1/2 top-3 left-1/2">
           {title}
         </div>
@@ -51,7 +53,7 @@ export default function WarningModal({
           <CloseButton onClose={handle_close} />
         </div>
       </div>
-      <div className={modal.modal_content}>{children}</div>
+      <div className="modal_content">{children}</div>
       <div className="flex self-end justify-around mb-5 justify-self-center">
         <Button
           className=""

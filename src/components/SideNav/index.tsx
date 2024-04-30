@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import Logo from './Logo';
 interface ISideNav {
   className?: string;
@@ -19,11 +20,10 @@ const SideNav = ({ data, className, currPage, setCurrPage }: ISideNav) => {
         {data.map((page, index) => {
           return (
             <button
-              className={`${
-                currentPage() === index
-                  ? 'bg-nr-green text-black '
-                  : ' hover:bg-nr-600 text-green-nr'
-              }
+              className={`${currentPage() === index
+                ? 'bg-nr-green text-black '
+                : ' hover:bg-nr-600 text-green-nr'
+                }
                px-2 py-4 font-logo text-2xl
                `}
               type="button"
@@ -51,10 +51,11 @@ const SideNav = ({ data, className, currPage, setCurrPage }: ISideNav) => {
     }
     return localCurrentPage;
   };
+  const isRoomsMap = data[currentPage()].name === 'Rooms Map';
   return (
     <div style={{ display: 'flex' }}>
       {render_side_nav()}
-      <div className="w-full p-8 full-height bg-nr-800">
+      <div className={`w-full ${isRoomsMap ? '' : 'p-8'} full-height bg-nr-800`}>
         {data[currentPage()].component}
       </div>
     </div>

@@ -1,12 +1,14 @@
+import './AddModal.css';
+
 import React from 'react';
-import modal from './addmodal.module.css';
-import Button from '../Button';
+
 import { ButtonType } from '../../types';
+import Button from '../Button';
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
     <div
-      className={modal.close_button}
+      className="close_button"
       onClick={() => onClose()}
       id="titlebar-close"
     >
@@ -38,15 +40,15 @@ export default function AddModal({
   handle_save: () => void;
   title: string;
   handle_close: () => void;
-}): JSX.Element {
+}): JSX.Element | null {
   if (show === false) {
     return null;
   }
   return (
-    <div className={modal.wrapper}>
-      <div className={modal.title_bar}>
+    <div className="wrapper">
+      <div className="title_bar">
         <div className="fixed top-3 justify-self-center"> {title}</div>
-        <div className="">
+        <div>
           <CloseButton onClose={handle_close} />
         </div>
       </div>

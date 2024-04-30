@@ -1,23 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MinimizeButton } from './MinimizeButton';
-import { MaximizeButton } from './MaximizeButton';
-import { RestoreButton } from './RestoreButton';
+import './TitleBar.css';
+
+import { useEffect, useRef, useState } from 'react';
+
 import { CloseButton } from './CloseButton';
-import title_bar from './title_bar.module.css';
 import { FileMenu } from './FileMenu';
+import { MaximizeButton } from './MaximizeButton';
+import { MinimizeButton } from './MinimizeButton';
+import { RestoreButton } from './RestoreButton';
 
 export default function TitleBar({ title }: { title: string }) {
   const [isMaximized, setIsMaximized] = useState(false);
   const [isFileMenuActive, setIsFileMenuActive] = useState(false);
-  const subMenuRef = useRef(null);
-  const menuRef = useRef(null);
+
+  const subMenuRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event: MouseEvent) {
       if (
-        subMenuRef.current &&
-        !subMenuRef.current.contains(event.target) &&
-        !menuRef.current.contains(event.target)
+        !subMenuRef.current?.contains(event.target as Node) &&
+        !menuRef.current?.contains(event.target as Node)
       ) {
         setIsFileMenuActive(false);
       }
@@ -29,9 +31,9 @@ export default function TitleBar({ title }: { title: string }) {
   }, [subMenuRef, menuRef]);
 
   return (
-    <div className={title_bar.titlebar}>
-      <div data-tauri-drag-region className={title_bar.titlebar_top}>
-        <div data-tauri-drag-region className={title_bar.title}>
+    <div className="titlebar">
+      <div data-tauri-drag-region className="titlebar_top">
+        <div data-tauri-drag-region className="title">
           <p data-tauri-drag-region className="cursor-default">
             {title}
           </p>
@@ -46,9 +48,8 @@ export default function TitleBar({ title }: { title: string }) {
       </div>
       <div
         ref={menuRef}
-        className={`${isFileMenuActive ? title_bar.menu_background : ''} ${
-          title_bar.app_menu
-        }`}
+        className={`${isFileMenuActive ? 'menu_background' : ''} ${'app_menu'
+          }`}
         onClick={() => setIsFileMenuActive(!isFileMenuActive)}
       >
         File

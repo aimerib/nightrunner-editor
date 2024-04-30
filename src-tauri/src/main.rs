@@ -3,121 +3,18 @@
   windows_subsystem = "windows"
 )]
 
+use directories::UserDirs;
+use nightrunner_lib::config::{Event, Item, Narrative, Room, RoomBlueprint, Subject, Verb};
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
-use std::collections::{BTreeMap, HashMap};
-use std::fs;
-use tauri::api::dir::DiskEntry;
-use tauri::api::{dir::read_dir, path};
-
-// region: types
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-pub struct Room {
-  pub id: u16,
-  pub name: String,
-  pub description: String,
-  pub exits: Vec<Exits>,
-  pub stash: Storage,
-  pub room_events: Vec<u16>,
-  pub narrative: u16,
-  pub subjects: Vec<u16>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-pub struct Exits {
-  pub room_id: u16,
-  pub direction: Directions,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub enum Directions {
-  EAST,
-  NORTH,
-  SOUTH,
-  WEST,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Storage {
-  pub items: Vec<Item>,
-  pub item_ids: Vec<u16>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Item {
-  pub id: u16,
-  pub name: String,
-  pub description: String,
-  pub can_pick: bool,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-pub struct Narrative {
-  pub id: u16,
-  pub text: String,
-  pub description: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub struct Verb {
-  pub id: u16,
-  // pub name: String,
-  pub names: Vec<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub struct Event {
-  pub id: u16,
-  pub name: String,
-  pub description: String,
-  pub location: u16,
-  pub destination: Option<u16>,
-  pub narrative: Option<u16>,
-  pub required_verb: Option<u16>,
-  pub required_subject: Option<u16>,
-  pub required_item: Option<u16>,
-  #[serde(default)]
-  pub completed: bool,
-  pub add_item: Option<u16>,
-  pub remove_old_narrative: bool,
-  pub remove_item: Option<u16>,
-  pub required_events: Vec<u16>,
-}
-
-impl Default for Event {
-  fn default() -> Self {
-    Event {
-      id: 0,
-      name: "".to_string(),
-      description: "".to_string(),
-      location: 0,
-      destination: None,
-      narrative: None,
-      required_verb: None,
-      required_subject: None,
-      required_item: None,
-      completed: false,
-      add_item: None,
-      remove_old_narrative: false,
-      remove_item: None,
-      required_events: Vec::new(),
-    }
-  }
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub struct Subject {
-  pub id: u16,
-  pub name: String,
-  pub description: String,
-}
-// endregion
+use serde_json::Value;
+use std::collections::HashMap;
+use std::fs::{self, read_dir, DirEntry};
 
 #[tauri::command]
 fn get_home_folder() -> String {
-  let path = path::home_dir();
-  if let Some(home_folder) = path {
-    let path_string = home_folder.into_os_string().into_string().unwrap();
+  if let Some(user_dirs) = UserDirs::new() {
+    let home_folder = user_dirs.home_dir();
+    let path_string = home_folder.to_string_lossy().to_string();
     path_string
   } else {
     // Change this to a result and handle on frontend
@@ -131,7 +28,7 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
   let subjects = get_subjects_from_state(&game_state);
   let events = get_events_from_state(&game_state);
   let items = get_items_from_state(&game_state);
-  let rooms = get_rooms_from_state(&game_state);
+  let rooms: (String, Vec<Room>) = get_rooms_from_state(&game_state);
   let narratives = get_narratives_from_state(&game_state);
   let verbs = get_verbs_from_state(&game_state);
 
@@ -141,9 +38,9 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
 
   #[derive(Debug)]
   enum GameData<'a> {
-    Rooms(&'a (String, BTreeMap<i32, Room>)),
+    Rooms(&'a (String, Vec<Room>)),
     Subjects(&'a (String, Vec<Subject>)),
-    Events(&'a (String, BTreeMap<i32, Event>)),
+    Events(&'a (String, Vec<Event>)),
     Items(&'a (String, Vec<Item>)),
     Narratives(&'a (String, Vec<Narrative>)),
     Verbs(&'a (String, Vec<Verb>)),
@@ -165,10 +62,14 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
     fs::create_dir_all(&game_path).expect("Could not create directory");
     for state_item in state_items_iter {
       match state_item {
-        GameData::Rooms((key, rooms)) => {
+        GameData::Rooms((_, rooms)) => {
+          let room_blueprints = rooms
+            .iter()
+            .map(|room| room.into_room_blueprint())
+            .collect::<Vec<RoomBlueprint>>();
           fs::write(
-            format!("{}/{}.yml", &game_path, key),
-            serde_yaml::to_string(&rooms).unwrap(),
+            format!("{}/{}.yml", &game_path, "room_blueprints"),
+            serde_yaml::to_string(&room_blueprints).unwrap(),
           )
           .expect("Unable to write files to system");
         }
@@ -219,18 +120,27 @@ fn save_game(game_state: HashMap<String, serde_json::Value>) -> Result<String, S
 }
 
 #[tauri::command]
-fn load_game(game_folder: String) -> Result<BTreeMap<String, Value>, String> {
-  let all_files = read_dir(&game_folder, false).unwrap();
+fn load_game(game_folder: String) -> Result<Value, String> {
+  let all_files = read_dir(&game_folder).unwrap();
   let game_files = all_files
-    .iter()
-    .filter(|file| file.children.is_none() && file.name.as_ref().unwrap().ends_with(".yml"))
-    .collect::<Vec<&DiskEntry>>();
+    .filter(|file| {
+      file.as_ref().unwrap().file_type().unwrap().is_file()
+        && file
+          .as_ref()
+          .unwrap()
+          .file_name()
+          .to_str()
+          .unwrap()
+          .ends_with(".yml")
+    })
+    .map(|file| file.unwrap())
+    .collect::<Vec<DirEntry>>();
   let files_strings = game_files
     .iter()
     .map(|file| {
       (
-        file.name.clone().unwrap(),
-        file.path.to_str().unwrap().to_string(),
+        file.file_name().to_str().unwrap().to_string(),
+        file.path().to_str().unwrap().to_string(),
       )
     })
     .collect::<Vec<(String, String)>>();
@@ -247,31 +157,27 @@ fn load_game(game_folder: String) -> Result<BTreeMap<String, Value>, String> {
     let intro: String = serde_yaml::from_str(&game_files_raw.get("intro").unwrap()).unwrap();
     let subjects: Vec<Subject> =
       serde_yaml::from_str(&game_files_raw.get("subjects").unwrap()).unwrap();
-    let events: BTreeMap<i32, Event> =
-      serde_yaml::from_str(&game_files_raw.get("events").unwrap()).unwrap();
+    let events: Vec<Event> = serde_yaml::from_str(&game_files_raw.get("events").unwrap()).unwrap();
     let items: Vec<Item> = serde_yaml::from_str(&game_files_raw.get("items").unwrap()).unwrap();
-    let rooms: BTreeMap<i32, Room> =
-      serde_yaml::from_str(&game_files_raw.get("rooms").unwrap()).unwrap();
+    let room_blueprints: Vec<RoomBlueprint> =
+      serde_yaml::from_str(&game_files_raw.get("room_blueprints").unwrap()).unwrap();
+    let rooms = Room::build_rooms(&room_blueprints, &events, &items, &subjects);
     let narratives: Vec<Narrative> =
       serde_yaml::from_str(&game_files_raw.get("narratives").unwrap()).unwrap();
     let verbs: Vec<Verb> = serde_yaml::from_str(&game_files_raw.get("verbs").unwrap()).unwrap();
 
-    let mut game_state: BTreeMap<String, Value> = BTreeMap::new();
-    game_state.insert("intro".to_string(), serde_json::to_value(intro).unwrap());
-    game_state.insert(
-      "subjects".to_string(),
-      serde_json::to_value(subjects).unwrap(),
-    );
-    game_state.insert("events".to_string(), serde_json::to_value(events).unwrap());
-    game_state.insert("items".to_string(), serde_json::to_value(items).unwrap());
-    game_state.insert("rooms".to_string(), serde_json::to_value(rooms).unwrap());
-    game_state.insert(
-      "narratives".to_string(),
-      serde_json::to_value(narratives).unwrap(),
-    );
-    game_state.insert("verbs".to_string(), serde_json::to_value(verbs).unwrap());
+    let game_state = GameState {
+      intro,
+      subjects,
+      events,
+      items,
+      rooms,
+      narratives,
+      verbs,
+    };
 
-    return Ok(game_state);
+    let json = serde_json::to_value(&game_state).unwrap();
+    return Ok(json);
   }
   return Err("Not a valid game folder".to_string());
 }
@@ -282,7 +188,7 @@ fn is_game_folder(game_files: &Vec<(String, String)>) -> bool {
     "subjects.yml",
     "events.yml",
     "items.yml",
-    "rooms.yml",
+    "room_blueprints.yml",
     "narratives.yml",
     "verbs.yml",
   ];
@@ -297,35 +203,18 @@ fn is_game_folder(game_files: &Vec<(String, String)>) -> bool {
 
 fn get_rooms_from_state(
   game_state: &HashMap<String, serde_json::Value>,
-) -> (String, BTreeMap<i32, Room>) {
+) -> (String, Vec<Room>) {
   let (json_key, json_value) = game_state.get_key_value("rooms").unwrap();
-  let value: Map<String, serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
-  let rooms = value
-    .iter()
-    .map(|(k, v)| {
-      (
-        k.parse::<i32>().unwrap(),
-        serde_json::from_value::<Room>(v.clone()).unwrap(),
-      )
-    })
-    .collect::<BTreeMap<i32, _>>();
+  let rooms: Vec<Room> = serde_json::from_value(json_value.clone()).unwrap();
   (json_key.clone(), rooms)
 }
 
 fn get_events_from_state(
   game_state: &HashMap<String, serde_json::Value>,
-) -> (String, BTreeMap<i32, Event>) {
+) -> (String, Vec<Event>) {
   let (json_key, json_value) = game_state.get_key_value("events").unwrap();
-  let value: Map<String, serde_json::Value> = serde_json::from_value(json_value.clone()).unwrap();
-  let events = value
-    .iter()
-    .map(|(k, v)| {
-      (
-        k.parse::<i32>().unwrap(),
-        serde_json::from_value::<Event>(v.clone()).unwrap(),
-      )
-    })
-    .collect::<BTreeMap<i32, _>>();
+  print!("{:?}", json_value);
+  let events: Vec<Event> = serde_json::from_value(json_value.clone()).unwrap();
   (json_key.clone(), events)
 }
 
@@ -375,6 +264,8 @@ fn get_narratives_from_state(
 
 fn main() {
   tauri::Builder::default()
+    .plugin(tauri_plugin_dialog::init())
+    .plugin(tauri_plugin_notification::init())
     .invoke_handler(tauri::generate_handler![
       get_home_folder,
       save_game,
@@ -382,4 +273,15 @@ fn main() {
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
+}
+
+#[derive(Serialize, Deserialize)]
+struct GameState {
+  intro: String,
+  subjects: Vec<Subject>,
+  events: Vec<Event>,
+  items: Vec<Item>,
+  rooms: Vec<Room>,
+  narratives: Vec<Narrative>,
+  verbs: Vec<Verb>,
 }

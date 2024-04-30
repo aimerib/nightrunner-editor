@@ -1,23 +1,42 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-len */
 /* eslint-disable no-nested-ternary */
-import React, { useState, useContext, useEffect } from 'react';
-import { Room, Exit, Narrative, Subject, Item, Directions } from '@nightrunner/nightrunner_lib';
+import '@xyflow/react/dist/style.css';
+import './rooms.module.css';
+
+import { Directions, Exit, Item, Narrative, Room, Subject } from '@nightrunner/nightrunner_lib';
+import { addEdge, applyEdgeChanges, applyNodeChanges, Background, BackgroundVariant, ConnectionMode, Controls, DefaultEdgeOptions, Edge, FitViewOptions, Node, NodeTypes, OnConnect, OnEdgesChange, OnNodesChange, Panel, ReactFlow, updateEdge } from '@xyflow/react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+
 import {
-  Button,
-  RadioButton,
-  ListContainer,
-  Input,
-  SelectList,
   AddModal,
+  Button,
+  Input,
+  ListContainer,
   Modal,
+  RadioButton,
+  SelectList,
 } from '../../components';
 import { store } from '../../store';
-import { useFocus } from '../../utils';
 import {
   ActionTypes,
   ButtonType,
 } from '../../types';
-import style from './rooms.module.css';
+import { useFocus } from '../../utils';
+import ButtonEdge from './ButtonEdge';
+import ConnectionLine from './ConnectionLine';
+import RoomNode from './RoomNode';
+import TopBar from './TopBar';
+import EditRoom from './EditRoom';
+
+
+const nodeTypes: NodeTypes = {
+  custom: RoomNode,
+};
+
+const edgeTypes = {
+  buttonedge: ButtonEdge,
+};
 
 export default function Rooms() {
   // init states
@@ -30,7 +49,6 @@ export default function Rooms() {
   const [location, set_location] = useState(null);
   const [direction, set_direction] = useState<Directions | ''>('');
   const [showModal, set_showModal] = useState(false);
-  // const [exit_id, set_exit_id] = useState(0);
   const [exits_exist, set_exits_exist] = useState<boolean>(false);
   const [is_first_room, set_is_first_room] = useState<boolean>(null);
   const [selected_exit, set_selected_exit] = useState<Exit>(null);
@@ -67,21 +85,14 @@ export default function Rooms() {
     { value: 'west', label: 'West' },
   ];
 
-  const rooms_array: Room[] = rooms_state
-    ? Object.keys(rooms_state).map((key) => {
-        return rooms_state[key];
-      })
-    : [];
-
   useEffect(() => {
     if (exits.length > 0) {
-      // set_exit_id(exits[exits.length - 1].id + 1);
       set_exits_exist(true);
     }
   }, [exits]);
 
   useEffect(() => {
-    if (rooms_array.length < 1) {
+    if (rooms_state.length < 1) {
       set_is_first_room(true);
     } else {
       set_is_first_room(false);
@@ -89,8 +100,8 @@ export default function Rooms() {
   }, [id, room]);
 
   useEffect(() => {
-    if (rooms_array.length > 0) {
-      set_id(rooms_array[rooms_array.length - 1].id + 1);
+    if (rooms_state.length > 0) {
+      set_id(rooms_state[rooms_state.length - 1].id + 1);
     }
   }, []);
 
@@ -108,7 +119,7 @@ export default function Rooms() {
 
   const handleChange = () => {
     if (
-      rooms_array.find((r: Room) => {
+      rooms_state.find((r: Room) => {
         return r.name === name;
       }) &&
       !room.id
@@ -292,154 +303,84 @@ export default function Rooms() {
     return true;
   }
 
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const [showEditRoom, setShowEditRoom] = useState(false);
+
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes],
+  );
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges],
+  );
+  const onConnect: OnConnect = useCallback(
+    (connection) => setEdges((eds) => addEdge({ ...connection, type: 'buttonedge' }, eds)),
+    [setEdges],
+  );
+
+  const onAddRoom = useCallback(() => {
+    const newId = id + 1;
+    const newNode: Node = {
+      id: id.toString(),
+      type: 'custom',
+      position: { x: 0, y: 0 },
+      data: { label: `Room ${id}` },
+      origin: [0.5, 0.0],
+    };
+    setNodes((nds) => [...nds, newNode]);
+    set_id(newId);
+    setShowEditRoom(true);
+  }, [id]);
+
+  const edgeUpdateSuccessful = useRef(true);
+
+  // const onConnect = useCallback((params) => setEdges((els) => addEdge(params, els)), []);
+
+  const onEdgeUpdateStart = useCallback(() => {
+    edgeUpdateSuccessful.current = false;
+  }, []);
+
+  const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
+    edgeUpdateSuccessful.current = true;
+    setEdges((els) => updateEdge(oldEdge, newConnection, els));
+  }, []);
+
+  const onEdgeUpdateEnd = useCallback((_, edge) => {
+    if (!edgeUpdateSuccessful.current) {
+      setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+    }
+
+    edgeUpdateSuccessful.current = true;
+  }, []);
+
   return (
-    <div className="w-full h-full bg-nr-main text-green-nr">
-      <div className="grid h-full grid-cols-2">
-        {/* left side - content*/}
-        <ListContainer label="Existing rooms:">{renderRooms()}</ListContainer>
-        {/* right side - form for adding more rooms */}
-        <form
-          className="flex flex-col gap-5 pl-3 place-content-center"
-          onSubmit={(e) => {
-            handleChange();
-            e.preventDefault();
-          }}
-        >
-          <Input
-            label="Room name:"
-            name="name"
-            autoFocus
-            innerRef={inputRef}
-            value={name}
-            onChange={(e) => {
-              set_name(e.target.value);
-            }}
-          />
-          <Input
-            label="Room description:"
-            name="description"
-            value={description}
-            onChange={(e) => set_description(e.target.value)}
-          />
-          <SelectList
-            label="Narrative"
-            options={narrativesOptions}
-            value={find_value_by_id(narrativesOptions, narrative)}
-            onChange={(e) => {
-              set_narrative(
-                available_narratives.find(
-                  (n: Narrative) => n.id === e.value
-                ).id
-              );
-            }}
-          />
-          <div className={style.row}>
-            <div className={style.col}>
-              <SelectList
-                isMulti
-                label="Items in this location"
-                options={itemsOptions}
-                value={itemsOptions.filter((e) => {
-                  return items.map((i) => i.id).includes(e.value);
-                })}
-                onChange={(e) => {
-                  set_items(e);
-                }}
-              />
-            </div>
-            <div className={style.col}>
-              <SelectList
-                isMulti
-                label="Subjects in this room"
-                options={subjectsOptions}
-                value={subjectsOptions.filter((e) => {
-                  return subjects.map((s) => s.name).includes(e.label);
-                })}
-                onChange={(e) => {
-                  set_subjects(e.map((subject) => subject.value));
-                }}
-              />
-            </div>
-          </div>
-          <div className="h-full">
-            <ListContainer scrollable small label="Room exits:">
-              {renderExits()}
-            </ListContainer>
-            <div className="flex justify-between pt-5">
-              <Button
-                disabled={is_first_room}
-                className="text-base justify-self-center"
-                type={ButtonType.BUTTON}
-                onClick={() => set_showModal(true)}
-              >
-                Add exit
-              </Button>
-              <Button
-                disabled={!exits_exist}
-                className="text-base justify-self-center"
-                type={ButtonType.BUTTON}
-                onClick={handle_delete_exit}
-              >
-                Delete exit
-              </Button>
-            </div>
-          </div>
-          <AddModal
-            show={showModal}
-            title="Add exits"
-            handle_save={handle_save_exits}
-            handle_close={handle_close_modal}
-          >
-            <SelectList
-              label="To location"
-              options={roomsOptions.filter(({ value: exit_location }) => {
-                return (
-                  exit_location !== room.id &&
-                  exitNotUsed(exit_location, exits)
-                );
-              })}
-              value={roomsOptions.filter(({ value }) => {
-                return rooms_state.find((r: Room) => r.id === value).id === location;
-              })}
-              onChange={({ value }: { value: number }) => {
-                set_location(value);
-              }}
-            />
-            <SelectList
-              label="Exit direction"
-              options={directionsOptions.filter(
-                ({ label: direction_to_check }) => {
-                  return directionNotUsed(direction_to_check, exits);
-                }
-              )}
-              value={directionsOptions.filter(
-                ({ value }) => direction === value
-              )}
-              onChange={(e) => set_direction(e.value)}
-            />
-          </AddModal>
-          <div className="flex justify-around mt-5">
-            <Button type={ButtonType.SUBMIT} disabled={disableSave()}>
-              Save room
-            </Button>
-            <Button
-              disabled={!can_delete()}
-              type={ButtonType.BUTTON}
-              onClick={handleDelete}
-            >
-              Delete room
-            </Button>
-          </div>
-        </form>
-      </div>
-      <Modal
-        show={show_modal}
-        handle_close={() => set_show_modal(false)}
-        title="Invalid Room"
+    <>
+      {/* <TopBar onAddRoom={onAddRoom} onRemoveRoom={() => {}} /> */}
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onEdgeUpdate={onEdgeUpdate}
+        onEdgeUpdateStart={onEdgeUpdateStart}
+        onEdgeUpdateEnd={onEdgeUpdateEnd}
+        onConnect={onConnect}
+        fitView
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        proOptions={{ hideAttribution: true }}
+        connectionMode={ConnectionMode.Loose}
+        connectionLineStyle={{ stroke: '#000', strokeWidth: 2 }}
       >
-        <p>Room already in use</p>
-      </Modal>
-    </div>
+        <Panel position="top-left">
+          <Button className="m-2 shadow-nr text-green-nr" onClick={onAddRoom}>Add Room</Button>
+        </Panel>
+        <Controls showInteractive={false} className="bg-nr-700 text-green-nr" />
+      </ReactFlow>
+      <EditRoom open={showEditRoom} handleClose={() => setShowEditRoom(false)} />
+    </>
   );
 
   function handle_save_exits() {

@@ -1,12 +1,15 @@
-import React from 'react';
-import { appWindow } from '@tauri-apps/api/window';
-import title_bar from './title_bar.module.css';
+import './TitleBar.css';
+
+import { getCurrent } from '@tauri-apps/api/window';
 
 export const CloseButton = () => {
   return (
     <div
-      className={`${title_bar.titlebar_button} ${title_bar.titlebar_button_close}`}
-      onClick={() => appWindow.close()}
+      className="titlebar_button titlebar_button_close"
+      onClick={() => {
+        const appWindow = getCurrent();
+        appWindow.close()
+      }}
       id="titlebar-close"
     >
       <svg

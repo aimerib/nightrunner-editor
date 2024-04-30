@@ -1,5 +1,6 @@
+import './Checkbox.css';
+
 import React from 'react';
-import checkbox from './checkbox.module.css';
 
 type CheckboxProps = {
   label: string;
@@ -25,12 +26,12 @@ const Checkbox = ({
       {...props}
     >
       <label className="flex" htmlFor={label}>
-        <div className={`nr-input ${checkbox.checkbox_container}`}>
+        <div className="nr-input checkbox_container">
           <input
             type="checkbox"
             name={label}
             value={value}
-            className={checkbox.hide_checkbox}
+            className="hide_checkbox"
           />
           <div className="self-center w-5 h-5 justify-self-center bg-nr-900">
             <svg
@@ -40,7 +41,7 @@ const Checkbox = ({
               className={`${checked ? 'visible' : 'hidden'}`}
             >
               <path
-                className={checkbox.checkbox_icon}
+                className="checkbox_icon"
                 d="M 17.195312 1.171875 C 16.382812 0.734375 15.480469 1.574219 14.949219
                   2.074219 C 13.730469 3.261719 12.703125 4.632812 11.546875 5.882812 C
                   10.265625 7.253906 9.082031 8.628906 7.769531 9.972656 C 7.023438 10.71875

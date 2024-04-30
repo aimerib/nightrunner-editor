@@ -1,46 +1,45 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState, useContext, useEffect } from 'react';
+import './Events.css';
+
+import {
+Event, Item, Narrative, Room, Subject, Verb
+} from '@nightrunner/nightrunner_lib';
+import { useContext, useEffect, useState } from 'react';
+
 import {
   Button,
-  RadioButton,
-  ListContainer,
-  Input,
-  SelectList,
   Checkbox,
+  Input,
+  ListContainer,
+  RadioButton,
+  SelectList,
 } from '../../components';
+import { store } from '../../store';
 import {
-  EVENT_TYPE,
   ActionTypes,
   ButtonType,
-  ITEM_TYPE,
-  NARRATIVE_TYPE,
-  SUBJECT_TYPE,
-  VERB_TYPE,
-  ROOM_ACTION_TYPE,
-  ROOM_TYPE,
+  ROOM_ACTION,
 } from '../../types';
-import { store } from '../../store';
 import { useFocus } from '../../utils';
-import style from './events.module.css';
 
 export default function Events() {
   // init states
   const [name, set_name] = useState('');
-  const [location, set_location] = useState(null);
-  const [narrative, set_narrative] = useState(null);
-  const [destination, set_destination] = useState(null);
-  const [required_verb, set_required_verb] = useState(null);
-  const [required_subject, set_required_subject] = useState(null);
-  const [required_item, set_required_item] = useState(null);
-  const [add_item, set_add_item] = useState(null);
+  const [location, set_location] = useState(1);
+  const [narrative, set_narrative] = useState<number | undefined>(undefined);
+  const [destination, set_destination] = useState<number | undefined>(undefined);
+  const [required_verb, set_required_verb] = useState<number | undefined>(undefined);
+  const [required_subject, set_required_subject] = useState<number | undefined>(undefined);
+  const [required_item, set_required_item] = useState<number | undefined>(undefined);
+  const [add_item, set_add_item] = useState(undefined);
   const [remove_old_narrative, set_remove_old_narrative] = useState(false);
-  const [remove_item, set_remove_item] = useState(null);
+  const [remove_item, set_remove_item] = useState(undefined);
   const [required_events, set_required_events] = useState([]);
   const [description, set_description] = useState('');
   const [previousId, set_id] = useState(0);
   const [inputRef, setInputFocus] = useFocus();
   const [selectedRadio, set_selectedRadio] = useState('');
-  const [event, set_event] = useState({} as EVENT_TYPE);
+  const [event, set_event] = useState({} as Event);
 
   // init events state
   const [events_state, dispatch_event] = useContext(store).gameState.events;
@@ -51,47 +50,52 @@ export default function Events() {
   const available_subjects = useContext(store).gameState.subjects[0];
 
   // holds the new event object
-  const new_event: EVENT_TYPE = {
+  const new_event: Event = {
+    id: previousId,
     name,
-    location,
-    narrative,
+    location: location,
+    narrative: narrative,
+    completed: false,
+    narrative_after: undefined,
+    add_subject: undefined,
+    move_subject_to_location: undefined,
     destination,
-    required_verb,
-    required_subject,
-    required_item,
-    add_item,
+    required_verb: required_verb,
+    required_subject: required_subject,
+    required_item: required_item,
+    add_item: add_item,
     remove_old_narrative,
-    remove_item,
+    remove_item: remove_item,
     required_events,
     description,
   };
 
-  const events_array = events_state
-    ? Object.keys(events_state).map((key) => {
-        return events_state[key];
-      })
-    : [];
+  // const events_array = events_state
+  //   ? Object.keys(events_state).map((key: string) => {
+  //       return events_state[key];
+  //     })
+  //   : [];
 
   useEffect(() => {
-    if (events_array.length > 0) {
-      set_id(events_array[events_array.length - 1].id + 1);
+    if (events_state.length > 0) {
+      set_id(events_state[events_state.length - 1].id + 1);
     }
   }, []);
 
   const resetInputs = () => {
-    set_event({} as EVENT_TYPE);
+    set_event({} as Event);
     set_name('');
     set_selectedRadio('');
     set_description('');
-    set_narrative(null);
-    set_location(null);
-    set_destination(null);
-    set_required_verb(null);
-    set_required_subject(null);
-    set_required_item(null);
-    set_add_item(null);
+    set_narrative(undefined);
+    set_location(1);
+    set_destination(undefined);
+    set_required_verb(undefined);
+    set_required_subject(undefined);
+    set_required_item(undefined);
+    set_add_item(undefined);
     set_remove_old_narrative(false);
-    set_remove_item(null);
+    set_remove_item(undefined);
     set_required_events([]);
     setInputFocus();
   };
@@ -117,17 +121,17 @@ export default function Events() {
             description,
           },
         });
-        const room: ROOM_TYPE = available_rooms[location];
+        const room: Room = available_rooms[location];
         dispatch_rooms({
           type: ActionTypes.UPDATE,
           payload: {
             ...room,
-            room_events: [...room.room_events, event.id].filter(
+            events: [...room.events, event].filter(
               //de-dupe events
-              (eid, index, self) => self.indexOf(eid) === index
+              (e, index, self) => self.indexOf(e) === index
             ),
-          } as ROOM_TYPE,
-        } as ROOM_ACTION_TYPE);
+          } as Room,
+        } as ROOM_ACTION);
         resetInputs();
       }
     } else if (
@@ -137,14 +141,17 @@ export default function Events() {
       new_event.narrative &&
       new_event.location
     ) {
-      const room = available_rooms[location];
+      const room = available_rooms.find((r) => r.id === location) as Room;
       const id = previousId + 1;
       dispatch_event({ type: ActionTypes.ADD, payload: { new_event, id } });
       dispatch_rooms({
         type: ActionTypes.UPDATE,
         payload: {
           ...room,
-          room_events: [...room.room_events, id],
+          events: [...room.events, new_event].filter(
+            //de-dupe events
+            (e, index, self) => self.indexOf(e) === index
+          ),
         },
       });
       set_id(id);
@@ -154,7 +161,7 @@ export default function Events() {
 
   const handleDelete = () => {
     const room = available_rooms[location];
-    room.room_events = room.room_events.filter((id) => id !== event.id);
+    room.events = room.events.filter((e) => e.id !== event.id);
 
     dispatch_event({ type: ActionTypes.REMOVE, payload: event.id });
     dispatch_rooms({ type: ActionTypes.UPDATE, payload: room });
@@ -162,76 +169,78 @@ export default function Events() {
   };
 
   const renderEvents = () => {
-    return Object.keys(events_state).map((key) => {
+    return events_state.map((e) => {
       return (
         <RadioButton
-          key={events_state[key].id}
-          id={events_state[key].name}
+          key={e.id}
+          id={e.name}
           name="events"
-          value={events_state[key].name}
+          value={e.name}
           onChange={() => {
-            set_event(events_state[key]);
-            set_name(events_state[key].name);
-            set_description(events_state[key].description);
-            set_narrative(events_state[key].narrative);
-            set_location(events_state[key].location);
-            set_destination(events_state[key].destination);
-            set_required_verb(events_state[key].required_verb);
-            set_required_subject(events_state[key].required_subject);
-            set_required_item(events_state[key].required_item);
-            set_add_item(events_state[key].add_item);
-            set_remove_old_narrative(events_state[key].remove_old_narrative);
-            set_remove_item(events_state[key].remove_item);
-            set_required_events(events_state[key].required_events);
-            set_selectedRadio(events_state[key].name);
+            set_event(e);
+            set_name(e.name);
+            set_description(e.description);
+            set_narrative(e.narrative);
+            set_location(e.location);
+            set_destination(e.destination);
+            set_required_verb(e.required_verb);
+            set_required_subject(e.required_subject);
+            set_required_item(e.required_item);
+            set_add_item(e.add_item);
+            set_remove_old_narrative(e.remove_old_narrative);
+            set_remove_item(e.remove_item);
+            set_required_events(e.required_events);
+            set_selectedRadio(e.name);
           }}
-          checked={selectedRadio === events_state[key].name}
+          checked={selectedRadio === e.name}
         >
-          {events_state[key].name} - {events_state[key].description}
+          {e.name} - {e.description}
         </RadioButton>
       );
     });
   };
-  const itemsOptions = available_items.map((i: ITEM_TYPE) => {
+  const itemsOptions = available_items.map((i: Item) => {
     return { label: i.name, value: i.id };
   });
-  const roomsOptions = Object.keys(available_rooms)
-    .filter((key) => available_rooms[key].name !== 'Intro')
-    .map((key) => {
+  const roomsOptions = available_rooms
+    .filter((room) => room.name !== 'Intro')
+    .map((room) => {
       return {
-        label: available_rooms[key].name,
-        value: available_rooms[key].id,
+        label: room.name,
+        value: room.id,
       };
     });
-  const narrativesOptions = available_narratives.map((n: NARRATIVE_TYPE) => {
+  const narrativesOptions = available_narratives.map((n: Narrative) => {
     return {
       label: n.description,
       value: n.id,
     };
   });
-  const subjectsOptions = available_subjects.map((s: SUBJECT_TYPE) => {
+  const subjectsOptions = available_subjects.map((s: Subject) => {
     return {
       label: s.name,
       value: s.id,
     };
   });
-  const eventsOptions = Object.keys(events_state).map((key) => {
+  const eventsOptions = events_state.map((e) => {
     return {
-      label: events_state[key].name,
-      value: events_state[key].id,
+      label: e.name,
+      value: e.id,
     };
   });
 
-  const verbsOptions = available_verbs.map((v: VERB_TYPE) => {
+  const verbsOptions = available_verbs.map((v: Verb) => {
     return {
       label: v.names[0],
       value: v.id,
     };
   });
 
-  const find_value_by_id = (array, id) => {
+  const find_value_by_id = (array: {
+    label: string, value: number
+  }[], id: number): { label: string, value: number } | undefined => {
     const selectOption = array.find((object) => object.value === id);
-    const value = selectOption ? selectOption : null;
+    const value = selectOption ? selectOption : undefined;
     return value;
   };
 
@@ -279,52 +288,52 @@ export default function Events() {
               value={description}
               onChange={(e) => set_description(e.target.value)}
             />
-            <div className={style.row}>
-              <div className={style.col}>
+            <div className="row">
+              <div className="col">
                 <SelectList
                   label="Event location"
                   options={roomsOptions}
                   value={find_value_by_id(roomsOptions, location)}
                   onChange={(e) => {
-                    const room: ROOM_TYPE = available_rooms[location];
+                    const room: Room = available_rooms[location];
                     dispatch_rooms({
                       type: ActionTypes.UPDATE,
                       payload: {
                         ...room,
-                        room_events: room.room_events.filter(
+                        room_events: room.events.filter(
                           //de-dupe events
-                          (eid) => eid !== location
+                          (ev) => ev.location !== location
                         ),
-                      } as ROOM_TYPE,
-                    } as ROOM_ACTION_TYPE);
+                      } as Room,
+                    } as ROOM_ACTION);
                     set_location(available_rooms[e.value].id);
                   }}
                 />
               </div>
-              <div className={style.col}>
+              <div className="col">
                 <SelectList
                   label="Required verb"
                   options={verbsOptions}
                   value={find_value_by_id(verbsOptions, required_verb)}
-                  onChange={(e) => set_required_verb(e.value)}
+                  onChange={(e: { value: number, label: string }) => set_required_verb(e.value)}
                 />
               </div>
             </div>
-            <div className={style.row}>
-              <div className={style.col}>
+            <div className="row">
+              <div className="col">
                 <SelectList
                   label="Required item"
                   options={itemsOptions}
                   value={find_value_by_id(itemsOptions, required_item)}
                   onChange={(e) => {
                     set_required_item(
-                      available_items.find((i: ITEM_TYPE) => i.id === e.value)
+                      available_items.find((i: Item) => i.id === e.value)
                         .id
                     );
                   }}
                 />
               </div>
-              <div className={style.col}>
+              <div className="col">
                 <SelectList
                   label="Required subject"
                   options={subjectsOptions}
@@ -339,8 +348,8 @@ export default function Events() {
                 />
               </div>
             </div>
-            <div className={style.row}>
-              <div className={style.col}>
+            <div className="row">
+              <div className="col">
                 <SelectList
                   label="Narrative"
                   options={narrativesOptions}
@@ -354,7 +363,7 @@ export default function Events() {
                   }}
                 />
               </div>
-              <div className={style.col}>
+              <div className="col">
                 <SelectList
                   label="Destination of event"
                   options={roomsOptions}
@@ -363,8 +372,8 @@ export default function Events() {
                 />
               </div>
             </div>
-            <div className={style.row}>
-              <div className={style.col}>
+            <div className="row">
+              <div className="col">
                 <SelectList
                   label="Add item"
                   options={itemsOptions}
@@ -377,7 +386,7 @@ export default function Events() {
                   }}
                 />
               </div>
-              <div className={style.col}>
+              <div className="col">
                 <SelectList
                   label="Remove item"
                   options={itemsOptions}
@@ -391,8 +400,8 @@ export default function Events() {
                 />
               </div>
             </div>
-            <div className={style.row}>
-              <div className={style.col}>
+            <div className="row">
+              <div className="col">
                 <SelectList
                   label="Required events"
                   isMulti

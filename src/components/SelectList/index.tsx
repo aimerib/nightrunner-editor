@@ -1,33 +1,37 @@
-/* eslint-disable no-nested-ternary */
 import React from 'react';
-import Select, { components } from 'react-select';
+import Select, { ActionMeta, components, GroupBase, StylesConfig, ValueContainerProps } from 'react-select';
 
-const ValueContainer = (props) => {
+interface AdditionalProps {
+  isFocused?: boolean;
+}
+
+function ValueContainer<
+  Option,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>
+>(props: ValueContainerProps<Option, IsMulti, Group> & AdditionalProps) {
   const {
     isFocused,
     selectProps: { placeholder },
     children,
-  }: {
-    isFocused: boolean;
-    selectProps: { placeholder: string };
-    children: JSX.Element;
+    innerProps = {}
   } = props;
   return (
     <components.ValueContainer {...props}>
-      <components.Placeholder {...props} isFocused={isFocused}>
+      <components.Placeholder {...props} innerProps={innerProps} isFocused={isFocused!}>
         {placeholder}
       </components.Placeholder>
       {React.Children.map(children, (child) => {
-        if (child && child.type !== components.Placeholder) {
+        if (React.isValidElement(child) && child.type !== components.Placeholder) {
           return child;
         }
         return null;
       })}
     </components.ValueContainer>
   );
-};
+}
 
-const nrStyle = {
+const nrStyle: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
   noOptionsMessage: (styles) => ({
     ...styles,
     color: '#39ff14',
@@ -75,24 +79,24 @@ const nrStyle = {
     boxShadow: '0 0 0 4px hsla(0, 0%, 0%, 0.1),0 12px 5px hsla(0, 0%, 0%, 0.1)',
     marginTop: '4px',
   }),
-  option: (styles, { isDisabled, isFocused, isSelected, isMulti }) => {
+  option: (styles, { isDisabled, isFocused, isSelected }) => {
+    let backgroundColor = '';
+    if (!isDisabled) {
+      if (isSelected) {
+        backgroundColor = '#39ff14';
+      } else if (isFocused) {
+        backgroundColor = '#39ff14';
+      }
+    }
     return {
       ...styles,
       color: isFocused || isSelected ? '#111111' : '#39ff14',
-      backgroundColor: isDisabled
-        ? undefined
-        : isSelected && isMulti
-        ? '#39ff14'
-        : isSelected
-        ? '#39ff14'
-        : isFocused
-        ? '#39ff14'
-        : undefined,
+      backgroundColor: backgroundColor,
       cursor: isDisabled ? 'not-allowed' : 'default',
       ':active': {
         ...styles[':active'],
         backgroundColor: '#39ff14',
-        color: isSelected && 'black',
+        color: isSelected ? 'black' : undefined,
       },
     };
   },
@@ -104,18 +108,21 @@ const nrStyle = {
     ...styles,
     overflow: 'visible',
   }),
-  placeholder: (styles, state) => ({
-    ...styles,
-    color: '#39ff14',
-    position: 'absolute',
-    top: state.hasValue || state.selectProps.inputValue ? -33 : '10%',
-    left:
-      state.hasValue || state.selectProps.inputValue
-        ? state.isMulti
-          ? -7
-          : -16
-        : '0%',
-  }),
+  placeholder: (styles, state) => {
+    let left = '0%';
+
+    if (state.hasValue || state.selectProps.inputValue) {
+      left = state.isMulti ? '-7px' : '-16px';
+    }
+
+    return {
+      ...styles,
+      color: '#39ff14',
+      position: 'absolute',
+      top: state.hasValue || state.selectProps.inputValue ? -33 : '10%',
+      left
+    }
+  },
   multiValue: (styles) => {
     return {
       ...styles,
@@ -156,7 +163,7 @@ type OptionsType = OptionType[];
 
 type SelectListProps<IsMulti extends boolean> = {
   options: OptionsType;
-  onChange: (option) => void;
+  onChange: (newValue: unknown, actionMeta: ActionMeta<unknown>) => void;
   value?: OptionType | OptionType[];
   isMulti?: IsMulti;
   label?: string;

@@ -1,4 +1,5 @@
-import radio_button from './radio_button.module.css';
+import './RadioButton.css';
+
 import React from 'react';
 
 export default function RadioButton({
@@ -26,15 +27,15 @@ export default function RadioButton({
           ? 'bg-nr-active text-black '
           : 'hover:bg-nr-600 hover:text-green-nr'
       } `}
-      onChange={disabled ? null : onChange}
-      onClick={disabled ? null : onChange}
+      onChange={disabled ? undefined : onChange}
+      onClick={disabled ? undefined : onChange}
     >
       <input
         type="radio"
         id={id}
         name={name}
         value={value}
-        className={radio_button.hide_radio}
+        className="hide_radio"
       />
       <label className={'flex-1 truncate'} htmlFor={id}>
         {children}

@@ -1,28 +1,23 @@
-import Button from './Button';
-import TabGroup from './TabGroup';
-import Tab from './Tab';
 import AddModal from './AddModal';
-import RadioButton from './RadioButton';
-import ListContainer from './ListContainer';
-import Input from './Input';
-import SelectList from './SelectList';
+import Button from './Button';
 import Checkbox from './Checkbox';
-import TitleBar from './TitleBar';
-import SideNav from './SideNav';
-import WarningModal from './WarningModal';
+import Input from './Input';
+import ListContainer from './ListContainer';
 import Modal from './Modal';
+import RadioButton from './RadioButton';
+import SelectList from './SelectList';
+import SideNav from './SideNav';
+import TitleBar from './TitleBar';
+import WarningModal from './WarningModal';
 export {
-  Button,
-  TabGroup,
-  Tab,
   AddModal,
-  RadioButton,
-  ListContainer,
-  Input,
-  SelectList,
+  Button,
   Checkbox,
-  TitleBar,
+  Input,
+  ListContainer,
+  Modal,
+  RadioButton,
+  SelectList,
   SideNav,
-  WarningModal,
-  Modal
-};
+  TitleBar,
+  WarningModal};

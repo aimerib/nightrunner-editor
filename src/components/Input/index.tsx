@@ -1,5 +1,6 @@
-import React, { ChangeEventHandler, RefObject as Ref, FC } from 'react';
-import input from './input.module.css';
+import './Input.css';
+
+import { ChangeEventHandler, FC, RefObject as Ref } from 'react';
 
 type ComponentProps = {
   multiline?: boolean;
@@ -39,9 +40,8 @@ const Input: FC<InputProps | TextAreaProps> = ({
 }): JSX.Element => {
   return (
     <div
-      className={`flex flex-col text-xl font-bold${
-        multiline ? ' h-full' : ''
-      } ${className ? className : ''}`}
+      className={`flex flex-col text-xl font-bold${multiline ? ' h-full' : ''
+        } ${className ? className : ''}`}
     >
       {label && (
         <div className="flex pb-2">
@@ -56,7 +56,7 @@ const Input: FC<InputProps | TextAreaProps> = ({
                 borderRadius: '50%',
               }}
               data-text={helperText}
-              className={input.tooltip}
+              className="tooltip"
             >
               ?
             </div>
@@ -74,7 +74,7 @@ const Input: FC<InputProps | TextAreaProps> = ({
           }}
           disabled={disabled}
           name={name}
-          className={input.input_style}
+          className="input_style"
           autoFocus={autoFocus}
           ref={innerRef}
           value={value}
@@ -84,7 +84,7 @@ const Input: FC<InputProps | TextAreaProps> = ({
         <input
           disabled={disabled}
           name={name}
-          className={input.input_style}
+          className="input_style"
           autoFocus={autoFocus}
           ref={innerRef}
           type="text"

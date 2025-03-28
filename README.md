@@ -1,4 +1,6 @@
 # Nightrunner Editor
+<img width="1584" alt="Nightrunner Editor" src="https://github.com/user-attachments/assets/0b3c3939-69fe-4ebf-83d3-d00150044d0c" />
+
 
 This is the editor for the Nightrunner Interactive Fiction Engine.
 
